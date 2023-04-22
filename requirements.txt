@@ -36,11 +36,6 @@ cloudpickle==2.2.1
 cmake==3.26.1
 coloredlogs==15.0.1
 commonmark==0.9.1
-conda==23.1.0
-conda-content-trust @ file:///tmp/abs_5952f1c8-355c-4855-ad2e-538535021ba5h26t22e5/croots/recipe/conda-content-trust_1658126371814/work
-conda-package-handling @ file:///croot/conda-package-handling_1672865015732/work
-conda_package_streaming @ file:///croot/conda-package-streaming_1670508151586/work
-contourpy==1.0.7
 crashtest==0.4.1
 cryptography==40.0.1
 cssselect2==0.7.0

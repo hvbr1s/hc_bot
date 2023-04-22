@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>&#128274;</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+
+      body {
+            font-family: "Open Sans", sans-serif;
+            background-color: #0d0d0d;
+            color: white;
+            padding: 12px;
+            font-family: 'Press Start 2P', cursive;
+          }
+
+      button {
+
+        display: flex
+        text-align: left;
+        background: rgb(210, 207, 210);
+        color: rgb(7, 7, 7);         
+        cursor: pointer;
+        border: 2px solid rgb(7, 7, 7);
+        border-radius: 5px;
+        padding: 8px 16px;
+        box-shadow: 2px 2px 0 0 black,
+        4px 4px 0 0 white;
+        transition-duration: 200ms;
+        font-family: 'Press Start 2P', cursive;
+
+      }
+
+
+      button:hover {
+        
+        box-shadow: 3px 3px black, 6px 6px 0 0 white;
+        transform: translate(-2px, 2px);
+        
+      }
+
+      button + button {
+        
+        margin-top: 8px;
+        
+      }
+
+      .chatty {
+        
+        display: flex
+          
+      }
+
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+<body>
+  <p><b>Welcome</b> &#128075; <span id="wallet-address"></span></p>
+  
+  <button id="connectWallet"><b>Connect your account</b></button>
+  <button id="chat" class="chatty"><b>Start a chat</b></button>
+
+  <div id="display"></div>
+
+  <script type="text/javascript">
+    
+    let account = null;
+
+    const connect = async () => {
+    if (window.ethereum) {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        window.web3 = new Web3(window.ethereum);
+
+        const accounts = await web3.eth.getAccounts();
+        account = accounts[0];
+        const formattedAddress = `${account?.slice(0, 6)}...${account?.slice(-4)}`;
+        document.getElementById('wallet-address').textContent = formattedAddress;
+        document.getElementById('chat').onclick = startChat;
+    }
+    };
+
+    const startChat = async () => {
+    try {
+        const signature = await web3.eth.personal.sign("Access to chat bot", account);
+        await fetch('/auth?signature=' + signature);
+        window.location.href = '/gpt';
+    } catch (error) {
+        showError(error.message);
+    }
+    };
+
+    const showError = (message) => {
+    const errorMessage = document.getElementById("error-message");
+    errorMessage.textContent = message;
+    errorMessage.style.display = "block";
+    };
+
+    document.getElementById('connectWallet').onclick = connect;
+
+
+  </script>
+</body>
+</html>

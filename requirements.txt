@@ -192,7 +192,7 @@ pyarrow==11.0.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycocotools==2.0.6
-pycosat @ file:///croot/pycosat_1666805502580/work
+pycosat
 pycparser==2.21
 pycryptodome==3.17
 pydantic==1.10.7

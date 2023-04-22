@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">    
+    <title>Knowledge Bot</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: "Open Sans", sans-serif;
+            background-color: rgb(23, 23, 26);
+            color: rgba(255, 255, 255, 0.945);
+            padding: 12px;
+            font-family: 'Press Start 2P', cursive;
+        } 
+
+        button {
+            display: flex;
+            text-align: center;
+            background: rgb(210, 207, 210);
+            color: rgb(7, 7, 7);         
+            cursor: pointer;
+            border: 2px solid rgb(7, 7, 7);
+            border-radius: 5px;
+            padding: 8px 16px;
+            box-shadow: 2px 2px 0 0 black,
+            4px 4px 0 0 white;
+            transition-duration: 200ms;
+            font-family: 'Press Start 2P', cursive;
+            margin-bottom: 16px;
+            margin-top: 8px;
+        }
+
+            button:hover {
+            box-shadow: 3px 3px black, 6px 6px 0 0 white;
+            transform: translate(-2px, 2px);
+        }
+
+            form {
+                margin-top: 16px;
+            }
+
+            input[type="text"] {
+            background-color: #444; 
+            color: rgb(231, 224, 224); 
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+            input[type="text"]:focus {
+            outline: none;
+        }
+
+            label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"] {
+            background-color: #9f9c9c; 
+            color:black; 
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            width: 25%;
+            height: 100px; 
+            margin-bottom: 8px; 
+            margin-top: 8px;
+        }
+
+        /* input[type="text"] {
+            background-color: #9f9c9c; 
+            color:black; 
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 16px; 
+        } */
+
+        .response {
+            background-color: black;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 16px;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            min-height: 30px;
+            overflow-wrap: break-word;
+        }
+
+
+            #submit-btn {
+            display: flex;
+            text-align: center;
+            background: rgb(210, 207, 210);
+            color: rgb(7, 7, 7);         
+            cursor: pointer;
+            border: 2px solid rgb(7, 7, 7);
+            border-radius: 5px;
+            padding: 8px 16px;
+            box-shadow: 2px 2px 0 0 black,
+            4px 4px 0 0 white;
+            transition-duration: 200ms;
+            font-family: 'Press Start 2P', cursive;
+            margin-bottom: 8px
+        }
+
+            #submit-btn:hover {
+            box-shadow: 3px 3px black, 6px 6px 0 0 white;
+            transform: translate(-2px, 2px);
+        }
+
+
+        .response-container {
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+
+
+
+        .user-input {
+            background-color: #9f9c9c;
+            color: black;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            min-height: 30px;
+            overflow-wrap: break-word;
+            margin-top: 8px;
+        }
+
+
+        .loading {
+
+                margin-top: 8px
+
+        }
+
+        .conversation-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        #conversation-container {
+            max-width: 400px;
+            margin: 0 auto;
+            overflow-y: auto;
+        }
+
+        
+    </style>
+</head>
+<body>
+    <h1>Knowledge Bot&#129497;&#8205;&#9794;</h1>
+    <div class="conversation-wrapper">
+        <div id="conversation-container"></div>
+    </div>
+    <form>
+        <label for="input">Type your question:</label>
+        <input type="text" name="input" id="input">
+        <input type="submit" value="Submit" id="submit-btn">
+    </form>
+    
+    <div class="loading" style="display:none;">Loading...</div>
+
+
+    <section id="try-again">
+        <a href="http://127.0.0.1:8000/gpt">
+            <button class="try-button"><b>New chat</b></button>
+        </a> 
+    </section>
+
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+
+<script>
+    const fithEle = document.getElementById('try-again')
+    fithEle.style.display = 'none'
+    
+    function makeLinksClickable(text) {
+        var urlPattern = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        return text.replace(urlPattern, '<a href="$1" target="_blank">$1</a>');
+    }
+
+    function scrollToBottom() {
+        var conversationContainer = document.getElementById('conversation-container');
+        conversationContainer.scrollTop = conversationContainer.scrollHeight;
+    }
+    
+    function updateConversation(user_input, chatbot_output) {
+        var conversation_item = '<div class="response-container"><div class="user-input">' + user_input + '</div><div class="response">' + chatbot_output + '</div></div>';
+        $('#conversation-container').append(conversation_item);
+        scrollToBottom();
+    }
+
+
+    
+    $(function() {
+        $('form').submit(function(event) {
+            event.preventDefault();
+            var input_text = $('#input').val();
+            $('.loading').show(); // Show the loading element
+            $.ajax({
+                type: 'POST',
+                url: '/api',
+                data: JSON.stringify({user_input: input_text}),
+                contentType: 'application/json',
+                success: function(response) {
+                    $('.loading').hide();
+                    var user_input = input_text;
+                    var chatbot_output = makeLinksClickable(response.output);
+
+                    // Create a Showdown converter
+                    var converter = new showdown.Converter();
+
+                    // Convert chatbot_output to HTML using Showdown
+                    chatbot_output = converter.makeHtml(chatbot_output);
+
+                    updateConversation(user_input, chatbot_output);
+                    $('#input').val('');
+                },
+
+                error: function() {
+                    $('.loading').hide();
+                }
+            });
+        });
+    });
+    
+    fithEle.style.display = 'flex'
+</script>    
+    
+</html>

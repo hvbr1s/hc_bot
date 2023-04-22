@@ -183,7 +183,7 @@ posthog==2.5.0
 praw==7.7.0
 prawcore==2.3.0
 prompt-toolkit==3.0.38
-protobuf==3.19.3
+protobuf
 psutil==5.9.4
 ptyprocess==0.7.0
 PuLP==2.7.0

@@ -45,7 +45,6 @@ dataclasses-json==0.5.7
 datasets==2.11.0
 decorator==5.1.1
 Deprecated==1.2.13
-detectron2 @ git+https://github.com/facebookresearch/detectron2.git@d1e04565d3bec8719335b88be9e9b961bf3ec464
 dill==0.3.6
 distlib==0.3.6
 dnspython==2.3.0

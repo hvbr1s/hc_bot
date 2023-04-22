@@ -108,7 +108,7 @@ joblib==1.2.0
 jsonschema==4.17.3
 keyring==23.13.1
 kiwisolver==1.4.4
-langchain==0.0.142
+langchain==0.0.147
 layoutparser==0.3.4
 linkify-it-py==2.0.0
 lit==16.0.0

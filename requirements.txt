@@ -290,6 +290,7 @@ webencodings==0.5.1
 websocket-client==1.5.1
 websockets==10.4
 Werkzeug==2.2.3
+wheel
 wrapt==1.14.1
 XlsxWriter==3.0.9
 xxhash==3.2.0

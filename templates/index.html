@@ -71,14 +71,6 @@
             margin-top: 8px;
         }
 
-        /* input[type="text"] {
-            background-color: #9f9c9c; 
-            color:black; 
-            border: none;
-            padding: 8px;
-            border-radius: 4px;
-            margin-bottom: 16px; 
-        } */
 
         .response {
             background-color: black;
@@ -145,14 +137,36 @@
             display: flex;
             justify-content: center;
             width: 100%;
+            position: relative;
+            z-index: 1;
         }
 
+
         #conversation-container {
-            max-width: 400px;
+            max-width: 800px;
             margin: 0 auto;
             overflow-y: auto;
         }
 
+        a {
+            color: white;
+            cursor: pointer;
+        }
+
+        @keyframes typewriter {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        .typewriter {
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typewriter 1s steps(50, end) forwards;
+        }
         
     </style>
 </head>
@@ -184,45 +198,103 @@
 <script>
     const fithEle = document.getElementById('try-again')
     fithEle.style.display = 'none'
-    
+
     function makeLinksClickable(text) {
-        var urlPattern = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-        return text.replace(urlPattern, '<a href="$1" target="_blank">$1</a>');
+        var urlPattern = /((https?:\/\/)|(www\.))[^\s]+/ig;
+        return text.replace(urlPattern, function(match) {
+            var prefix = /^https?:\/\//.test(match) ? '' : 'http://';
+            return '<a href="' + prefix + match + '" target="_blank">' + match + '</a>';
+        });
     }
 
+  
     function scrollToBottom() {
         var conversationContainer = document.getElementById('conversation-container');
         conversationContainer.scrollTop = conversationContainer.scrollHeight;
     }
-    
-    function updateConversation(user_input, chatbot_output) {
-        var conversation_item = '<div class="response-container"><div class="user-input">' + user_input + '</div><div class="response">' + chatbot_output + '</div></div>';
-        $('#conversation-container').append(conversation_item);
-        scrollToBottom();
+
+
+    function typewriterEffect(chatbot_output, response_div, callback) {
+        let i = 0;
+        let isTag = false;
+        let text = "";
+
+        function typeNextChar() {
+            if (i < chatbot_output.length) {
+                let char = chatbot_output.charAt(i);
+                i++;
+
+                if (char === "<") {
+                    isTag = true;
+                } else if (char === ">") {
+                    isTag = false;
+                }
+
+                text += char;
+                response_div.innerHTML = text;
+
+                if (isTag) {
+                    setTimeout(typeNextChar, 25);
+                } else {
+                    setTimeout(typeNextChar, 50);
+                }
+            } else {
+                if (typeof callback === "function") {
+                    callback();
+                }
+            }
+        }
+
+        typeNextChar();
     }
 
 
-    
+
+    function updateConversation(user_input, chatbot_output) {
+        var response_container = document.createElement("div");
+        response_container.classList.add("response-container");
+
+        var user_input_div = document.createElement("div");
+        user_input_div.classList.add("user-input");
+        user_input_div.innerHTML = user_input;
+
+        var response_div = document.createElement("div");
+        response_div.classList.add("response");
+
+        response_container.appendChild(user_input_div);
+        response_container.appendChild(response_div);
+        document.getElementById("conversation-container").appendChild(response_container);
+
+        typewriterEffect(chatbot_output, response_div, scrollToBottom);
+    }
+
+
     $(function() {
         $('form').submit(function(event) {
             event.preventDefault();
             var input_text = $('#input').val();
-            $('.loading').show(); // Show the loading element
+            $('.loading').show(); 
             $.ajax({
                 type: 'POST',
                 url: '/api',
                 data: JSON.stringify({user_input: input_text}),
                 contentType: 'application/json',
+
                 success: function(response) {
                     $('.loading').hide();
                     var user_input = input_text;
-                    var chatbot_output = makeLinksClickable(response.output);
 
                     // Create a Showdown converter
                     var converter = new showdown.Converter();
 
                     // Convert chatbot_output to HTML using Showdown
-                    chatbot_output = converter.makeHtml(chatbot_output);
+                    var chatbot_output = converter.makeHtml(response.output);
+
+                    // Make links clickable
+                    chatbot_output = makeLinksClickable(chatbot_output);
+
+                    // Remove <p> and </p> tags from the output
+                    chatbot_output = chatbot_output.replace(/^<p>/i, '').replace(/<\/p>$/i, '');
 
                     updateConversation(user_input, chatbot_output);
                     $('#input').val('');

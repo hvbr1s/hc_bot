@@ -84,7 +84,6 @@ greenlet==2.0.2
 grpc-gateway-protoc-gen-openapiv2==0.1.0
 grpcio==1.53.0
 h11==0.14.0
-hashlib
 hexbytes==0.3.0
 hnswlib==0.7.0
 html5lib==1.1

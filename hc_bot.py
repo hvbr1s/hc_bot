@@ -38,6 +38,7 @@ history = ChatMessageHistory()
 
 env_vars = [
     'OPENAI_API_KEY',
+    'SERPAPI_API_KEY',
     'ALCHEMY_API_KEY',
     'PINECONE_API_KEY',
     'PINECONE_ENVIRONMENT',
@@ -64,6 +65,7 @@ llm=ChatOpenAI(
 
 pinecone.init(api_key=os.environ['PINECONE_API_KEY'], enviroment=os.environ['PINECONE_ENVIRONMENT'])
 pinecone.whoami()
+#index_name = 'hc'
 index_name = 'hctest'
 index = pinecone.Index(index_name)
 
@@ -71,7 +73,7 @@ embed_model = "text-embedding-ada-002"
 
 primer = """
 
-You are Amy, a friendly and helpful virtual customer support agent for Ledger.
+You are Amy, a friendly and helpful virtual customer support agent for Ledger, a French crypto company headed by CEO Pascal Gauthier.
 
 You might receive questions about Ledger products such as the Ledger Nano S (no battery, low storage), Nano X (bluetooth, large storage, battery), Nano S Plus (large storage, no bluetooth, no battery), and Ledger Live, but not Ledger Blue. 
 

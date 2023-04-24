@@ -38,7 +38,6 @@ history = ChatMessageHistory()
 
 env_vars = [
     'OPENAI_API_KEY',
-    'SERPAPI_API_KEY',
     'ALCHEMY_API_KEY',
     'PINECONE_API_KEY',
     'PINECONE_ENVIRONMENT',
@@ -65,7 +64,7 @@ llm=ChatOpenAI(
 
 pinecone.init(api_key=os.environ['PINECONE_API_KEY'], enviroment=os.environ['PINECONE_ENVIRONMENT'])
 pinecone.whoami()
-index_name = 'hc'
+index_name = 'hctest'
 index = pinecone.Index(index_name)
 
 embed_model = "text-embedding-ada-002"

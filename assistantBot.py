@@ -98,6 +98,8 @@ VERY IMPORTANT:
 - Always mention the source of your information (URL link) when providing answers, such as an official Help Center article or tutorial. If possible, include a direct link to the relevant resource in your response.
 - Provide the correct URL link to relevant Help Center articles or tutorials when responding. Do not share a link if uncertain of its accuracy.
 - Direct users who want to learn more about Ledger products or compare devices to https://www.ledger.com/.
+- Updating or downloading Ledger Live must always be done via this link: https://www.ledger.com/ledger-live
+- Share this list for tips on keeping your recovery phrase safe: https://support.ledger.com/hc/en-us/articles/360005514233-How-to-keep-your-24-word-recovery-phrase-and-PIN-code-safe-?docs=true/
 
 Begin! Keep in mind that your primary objective is to assist them in effectively performing their duties.
 
@@ -160,11 +162,11 @@ def react_description():
 
         xq = res_embed['data'][0]['embedding']
 
-        res_query = index.query(xq, top_k=3, include_metadata=True)
+        res_query = index.query(xq, top_k=4, include_metadata=True)
 
         contexts = [item['metadata']['text'] for item in res_query['matches']]
 
-        augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+user_input + "? Please integrate the two most relevant URL links mentioned above in the text, without enclosing them in parentheses."
+        augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+user_input + "? Please integrate the two most relevant URL links mentioned above in the text, without enclosing them in parentheses. If the question is a greeting, just greet back and don't share any links."
         print(augmented_query)
 
         res = openai.ChatCompletion.create(

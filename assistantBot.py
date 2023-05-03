@@ -99,7 +99,7 @@ VERY IMPORTANT:
 - Provide the correct URL link to relevant Help Center articles or tutorials when responding. Do not share a link if uncertain of its accuracy.
 - Direct users who want to learn more about Ledger products or compare devices to https://www.ledger.com/.
 
-Start by briefly greeting the agent. Keep in mind that your primary objective is to assist them in effectively performing their duties.
+Begin! Keep in mind that your primary objective is to assist them in effectively performing their duties.
 
 """
 
@@ -160,11 +160,11 @@ def react_description():
 
         xq = res_embed['data'][0]['embedding']
 
-        res_query = index.query(xq, top_k=5, include_metadata=True)
+        res_query = index.query(xq, top_k=3, include_metadata=True)
 
         contexts = [item['metadata']['text'] for item in res_query['matches']]
 
-        augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+user_input + "? Incorporate only the most pertinent URL links in your answer"
+        augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+user_input + "? Please integrate the two most relevant URL links mentioned above in the text, without enclosing them in parentheses."
         print(augmented_query)
 
         res = openai.ChatCompletion.create(

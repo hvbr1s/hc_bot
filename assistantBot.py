@@ -166,7 +166,7 @@ def react_description():
 
         contexts = [item['metadata']['text'] for item in res_query['matches']]
 
-        augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+user_input + "? Please integrate the two most relevant URL links mentioned above in the text, without enclosing them in parentheses. If the question is a greeting, just greet back and don't share any links."
+        augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+user_input + "? Please integrate the two most relevant URL links mentioned above in the text, without enclosing them in parentheses. If the question is a greeting, just greet back."
         print(augmented_query)
 
         res = openai.ChatCompletion.create(

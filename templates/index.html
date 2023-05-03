@@ -338,8 +338,9 @@
                     // Clean URL patterns
                     chatbot_output = cleanUrlPatterns(chatbot_output);
 
-                    // Remove <p> and </p> tags from the output
-                    chatbot_output = chatbot_output.replace(/^<p>/i, '').replace(/<\/p>$/i, '');
+                    // Remove <p> and </p> tags from the output and the last period if present
+                    chatbot_output = chatbot_output.replace(/^<p>/i, '').replace(/<\/p>$/i, '').replace(/\.(?=[^.]*$)/, '');
+
 
                     updateConversation(user_input, chatbot_output);
                     $('#input').val('');

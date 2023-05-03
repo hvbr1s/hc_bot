@@ -153,6 +153,11 @@
             cursor: pointer;
         }
 
+        .response a {
+            color: rgb(232, 232, 101);
+        }
+
+
         @keyframes typewriter {
             from {
                 width: 0;
@@ -202,12 +207,40 @@
     function makeLinksClickable(text) {
         var urlPattern = /((https?:\/\/)|(www\.))[^\s]+/ig;
         return text.replace(urlPattern, function(match) {
-            var prefix = /^https?:\/\//.test(match) ? '' : 'http://';
-            return '<a href="' + prefix + match + '" target="_blank">' + match + '</a>';
+            if (match.slice(-1) === '.') {
+                match = match.slice(0, -1);
+            }
+            var cleanedUrl = cleanUrlPatterns(match);
+            var prefix = /^https?:\/\//.test(cleanedUrl) ? '' : 'http://';
+            return '<a href="' + prefix + cleanedUrl + '" target="_blank">' + cleanedUrl + '</a>';
         });
     }
 
-  
+
+    function cleanUrlPatterns(url) {
+        var patterns = [
+            /(%3C\/p%3E|<\/p>|<\/li>|<\/p><\/li>|\.<\/p><\/li>|<\/p><\/li>\?docs=true|<\/p>\?docs=true)\?docs=true/g,
+            /\.?support=true/g,
+            /(\.)(\?docs=true)/g,
+            /(\.)(\?support=true)/g,
+            /(%3C(\/?[a-z]+)[^%]*%3E)/ig,
+            /<\/p><\/li>/g,
+            /<\/p>/g,
+            /<\/li>/g,
+            /<\p>/g,
+            /<\li>/g,
+            /<p>/g,
+            /<li>/g,
+        ];
+
+        patterns.forEach(function (pattern) {
+            url = url.replace(pattern, '');
+        });
+
+        return url;
+    }
+
+
     function scrollToBottom() {
         var conversationContainer = document.getElementById('conversation-container');
         conversationContainer.scrollTop = conversationContainer.scrollHeight;
@@ -234,9 +267,9 @@
                 response_div.innerHTML = text;
 
                 if (isTag) {
-                    setTimeout(typeNextChar, 25);
+                    setTimeout(typeNextChar, 10);
                 } else {
-                    setTimeout(typeNextChar, 50);
+                    setTimeout(typeNextChar, 10);
                 }
             } else {
                 if (typeof callback === "function") {
@@ -247,7 +280,6 @@
 
         typeNextChar();
     }
-
 
 
     function updateConversation(user_input, chatbot_output) {
@@ -266,6 +298,16 @@
         document.getElementById("conversation-container").appendChild(response_container);
 
         typewriterEffect(chatbot_output, response_div, scrollToBottom);
+    }
+
+
+    function updateUrls(text) {
+        var urlPattern = /((https?:\/\/)|(www\.))[^\s]+/ig;
+        return text.replace(urlPattern, function(match) {
+            var cleanedUrl = cleanUrlPatterns(match);
+            var prefix = /^https?:\/\//.test(cleanedUrl) ? '' : 'http://';
+            return '<a href="' + prefix + cleanedUrl + '" target="_blank">' + cleanedUrl + '</a>';
+        });
     }
 
 
@@ -292,6 +334,9 @@
 
                     // Make links clickable
                     chatbot_output = makeLinksClickable(chatbot_output);
+
+                    // Clean URL patterns
+                    chatbot_output = cleanUrlPatterns(chatbot_output);
 
                     // Remove <p> and </p> tags from the output
                     chatbot_output = chatbot_output.replace(/^<p>/i, '').replace(/<\/p>$/i, '');

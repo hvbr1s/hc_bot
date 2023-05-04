@@ -326,11 +326,15 @@
                     $('.loading').hide();
                     var user_input = input_text;
 
+                    // Remove the markdown formatting from the chatbot's response
+                    //var chatbot_output = response.output.replace(/(^#+\s*)|(\n#+\s*)/g, '');
+
                     // Create a Showdown converter
                     var converter = new showdown.Converter();
 
                     // Convert chatbot_output to HTML using Showdown
-                    var chatbot_output = converter.makeHtml(response.output);
+                    //var chatbot_output = converter.makeHtml(response.output);
+                    var chatbot_output = converter.makeMarkdown(response.output);
 
                     // Make links clickable
                     chatbot_output = makeLinksClickable(chatbot_output);
@@ -338,9 +342,8 @@
                     // Clean URL patterns
                     chatbot_output = cleanUrlPatterns(chatbot_output);
 
-                    // Remove <p> and </p> tags from the output and the last period if present
-                    chatbot_output = chatbot_output.replace(/^<p>/i, '').replace(/<\/p>$/i, '').replace(/\.(?=[^.]*$)/, '');
-
+                    // Remove the last period if present
+                    chatbot_output = chatbot_output.replace(/\.(?=[^.]*$)/, '');
 
                     updateConversation(user_input, chatbot_output);
                     $('#input').val('');

@@ -166,7 +166,7 @@ def react_description():
 
         contexts = [item['metadata']['text'] for item in res_query['matches']]
 
-        augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+user_input + "? Please integrate the two most relevant URL links mentioned above in the text, without enclosing them in parentheses. If the question is a greeting, just greet back."
+        augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+user_input + "? Please provide a comprehensive answer to the question, and make sure to incorporate relevant URL links from the previous context. Do not enclose the links in parentheses, and ensure that each link is directly related to the topic at hand before sharing it. NEVER share https://www.ledger.com/academy/ links."
         print(augmented_query)
 
         res = openai.ChatCompletion.create(

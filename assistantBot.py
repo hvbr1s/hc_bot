@@ -162,22 +162,25 @@ def react_description():
 
         xq = res_embed['data'][0]['embedding']
 
-        res_query = index.query(xq, top_k=4, include_metadata=True)
+        res_query = index.query(xq, top_k=5, include_metadata=True)
 
         contexts = [item['metadata']['text'] for item in res_query['matches']]
 
-        augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+user_input + "? Please provide a comprehensive answer to the question, and make sure to incorporate relevant URL links from the previous context. Do not enclose the links in parentheses, and ensure that each link is directly related to the topic at hand before sharing it. NEVER share https://www.ledger.com/academy/ links."
+        augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+user_input + "? Please provide a comprehensive answer to the question, and make sure to incorporate relevant URL links from the previous context. Do not enclose the links in parentheses. Don't share a link that is not included in the previous context. NEVER share https://www.ledger.com/academy/ links."
+        #augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+user_input
         print(augmented_query)
 
         res = openai.ChatCompletion.create(
+            
             model="gpt-3.5-turbo",
+            #model="gpt-4",
             messages=[
                 {"role": "system", "content": primer},
                 {"role": "user", "content": augmented_query}
             ]
         )
         response = res['choices'][0]['message']['content']
-        response = re.sub(r'<.*?>|(%3C/li%3E|</p>|</li>|</p></li>|\.?</p></li>|</li>)\?docs=true|\.?support=true', '-', response)
+        #response = re.sub(r'<.*?>|(%3C/li%3E|</p>|</li>|</p></li>|\.?</p></li>|</li>)\?docs=true|\.?support=true', '-', response)
         print(response)
         return jsonify({'output': response})
     except ValueError as e:

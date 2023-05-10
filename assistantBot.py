@@ -56,7 +56,7 @@ web3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
 #Initialize LLM
 llm=ChatOpenAI(
     openai_api_key=os.environ['OPENAI_API_KEY'],
-    temperature=0.1,
+    temperature=0,
     model_name='gpt-3.5-turbo'
     #model_name='gpt-4'
 )

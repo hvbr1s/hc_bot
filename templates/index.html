@@ -199,6 +199,7 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 
 <script>
     const fithEle = document.getElementById('try-again')
@@ -267,9 +268,9 @@
                 response_div.innerHTML = text;
 
                 if (isTag) {
-                    setTimeout(typeNextChar, 10);
+                    setTimeout(typeNextChar, 5);
                 } else {
-                    setTimeout(typeNextChar, 10);
+                    setTimeout(typeNextChar, 5);
                 }
             } else {
                 if (typeof callback === "function") {
@@ -310,6 +311,14 @@
         });
     }
 
+    function formatList(response) {
+        // Regex pattern to match numbered list items (e.g., "1. item")
+        const listItemPattern = /(\d+\.\s)([^\n]+)/g;
+
+        // Replace numbered list items with Markdown list syntax (e.g., "- item")
+        return response.replace(listItemPattern, (_, __, itemText) => `- ${itemText}`);
+        }
+
 
     $(function() {
         $('form').submit(function(event) {
@@ -326,15 +335,14 @@
                     $('.loading').hide();
                     var user_input = input_text;
 
-                    // Remove the markdown formatting from the chatbot's response
-                    //var chatbot_output = response.output.replace(/(^#+\s*)|(\n#+\s*)/g, '');
+                    // Create a Markdown parser
+                    var md = window.markdownit();
 
-                    // Create a Showdown converter
-                    var converter = new showdown.Converter();
+                    // Format the list items in the response text
+                    var formattedResponse = formatList(response.output);
 
-                    // Convert chatbot_output to HTML using Showdown
-                    //var chatbot_output = converter.makeHtml(response.output);
-                    var chatbot_output = converter.makeMarkdown(response.output);
+                    // Render the response as readable Markdown
+                    var chatbot_output = md.render(formattedResponse);
 
                     // Make links clickable
                     chatbot_output = makeLinksClickable(chatbot_output);
@@ -357,6 +365,5 @@
     });
     
     fithEle.style.display = 'flex'
-</script>    
-    
+</script>       
 </html>

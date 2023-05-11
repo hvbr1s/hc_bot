@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <title>Knowledge Bot</title>
     <style>
         body {
@@ -14,13 +14,13 @@
             color: rgba(255, 255, 255, 0.945);
             padding: 12px;
             font-family: 'Press Start 2P', cursive;
-        } 
+        }
 
         button {
             display: flex;
             text-align: center;
             background: rgb(210, 207, 210);
-            color: rgb(7, 7, 7);         
+            color: rgb(7, 7, 7);
             cursor: pointer;
             border: 2px solid rgb(7, 7, 7);
             border-radius: 5px;
@@ -43,8 +43,8 @@
             }
 
             input[type="text"] {
-            background-color: #444; 
-            color: rgb(231, 224, 224); 
+            background-color: #444;
+            color: rgb(231, 224, 224);
             border: none;
             padding: 8px;
             border-radius: 4px;
@@ -60,14 +60,14 @@
         }
 
         input[type="text"] {
-            background-color: #9f9c9c; 
-            color:black; 
+            background-color: #9f9c9c;
+            color:black;
             border: none;
             padding: 8px;
             border-radius: 4px;
             width: 25%;
-            height: 100px; 
-            margin-bottom: 8px; 
+            height: 100px;
+            margin-bottom: 8px;
             margin-top: 8px;
         }
 
@@ -89,7 +89,7 @@
             display: flex;
             text-align: center;
             background: rgb(210, 207, 210);
-            color: rgb(7, 7, 7);         
+            color: rgb(7, 7, 7);
             cursor: pointer;
             border: 2px solid rgb(7, 7, 7);
             border-radius: 5px;
@@ -172,7 +172,7 @@
             white-space: nowrap;
             animation: typewriter 1s steps(50, end) forwards;
         }
-        
+
     </style>
 </head>
 <body>
@@ -185,21 +185,20 @@
         <input type="text" name="input" id="input">
         <input type="submit" value="Submit" id="submit-btn">
     </form>
-    
+
     <div class="loading" style="display:none;">Loading...</div>
 
 
     <section id="try-again">
         <a href="http://127.0.0.1:8000/gpt">
             <button class="try-button"><b>New chat</b></button>
-        </a> 
+        </a>
     </section>
 
 </body>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
 
 <script>
     const fithEle = document.getElementById('try-again')
@@ -268,9 +267,9 @@
                 response_div.innerHTML = text;
 
                 if (isTag) {
-                    setTimeout(typeNextChar, 5);
+                    setTimeout(typeNextChar, 10);
                 } else {
-                    setTimeout(typeNextChar, 5);
+                    setTimeout(typeNextChar, 10);
                 }
             } else {
                 if (typeof callback === "function") {
@@ -311,20 +310,12 @@
         });
     }
 
-    function formatList(response) {
-        // Regex pattern to match numbered list items (e.g., "1. item")
-        const listItemPattern = /(\d+\.\s)([^\n]+)/g;
-
-        // Replace numbered list items with Markdown list syntax (e.g., "- item")
-        return response.replace(listItemPattern, (_, __, itemText) => `- ${itemText}`);
-        }
-
 
     $(function() {
         $('form').submit(function(event) {
             event.preventDefault();
             var input_text = $('#input').val();
-            $('.loading').show(); 
+            $('.loading').show();
             $.ajax({
                 type: 'POST',
                 url: '/api',
@@ -335,23 +326,22 @@
                     $('.loading').hide();
                     var user_input = input_text;
 
-                    // Create a Markdown parser
-                    var md = window.markdownit();
 
-                    // Format the list items in the response text
-                    var formattedResponse = formatList(response.output);
+                    // Create a Showdown converter
+                    var conv = new showdown.Converter({simpleLineBreaks: true, excludeTrailingPunctuationFromURLs: true, smartIndentationFix: true});
 
-                    // Render the response as readable Markdown
-                    var chatbot_output = md.render(formattedResponse);
+                    // Convert chatbot_output to HTML using Showdown
+                    var chatbot_output = conv.makeHtml(response.output);
+                    
+                    
+                    // console.log("-- pre processing --");
+                    // console.log(response.output);
 
+                    // console.log("-- post processing --");
+                    // console.log(chatbot_output)
+                    
                     // Make links clickable
                     chatbot_output = makeLinksClickable(chatbot_output);
-
-                    // Clean URL patterns
-                    chatbot_output = cleanUrlPatterns(chatbot_output);
-
-                    // Remove the last period if present
-                    chatbot_output = chatbot_output.replace(/\.(?=[^.]*$)/, '');
 
                     updateConversation(user_input, chatbot_output);
                     $('#input').val('');
@@ -363,7 +353,8 @@
             });
         });
     });
-    
+
     fithEle.style.display = 'flex'
-</script>       
+</script>
+
 </html>

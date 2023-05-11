@@ -165,9 +165,7 @@ def react_description():
         res_query = index.query(xq, top_k=5, include_metadata=True)
 
         contexts = [item['metadata']['text'] for item in res_query['matches']]
-
-        augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+user_input + "? Please provide a comprehensive answer to the question, and make sure to incorporate relevant URL links from the previous context. Do not enclose the links in parentheses. Don't share a link that is not included in the previous context. NEVER share https://www.ledger.com/academy/ links."
-        #augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+user_input
+        augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+ user_input + "? Please provide a comprehensive answer to the question, and make sure to incorporate relevant URL links from the previous context. NEVER enclose the links in parentheses. Do not share a link that's not explicitly included in the previous context."
         print(augmented_query)
 
         res = openai.ChatCompletion.create(

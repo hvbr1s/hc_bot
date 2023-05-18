@@ -176,7 +176,7 @@
     </style>
 </head>
 <body>
-    <h1>Knowledge Bot&#129497;&#8205;&#9794;</h1>
+    <h1>Knowledge Bot&#128302;</h1>
     <div class="conversation-wrapper">
         <div id="conversation-container"></div>
     </div>
@@ -231,6 +231,7 @@
             /<\li>/g,
             /<p>/g,
             /<li>/g,
+            /\.$/
         ];
 
         patterns.forEach(function (pattern) {
@@ -333,12 +334,6 @@
                     // Convert chatbot_output to HTML using Showdown
                     var chatbot_output = conv.makeHtml(response.output);
                     
-                    
-                    // console.log("-- pre processing --");
-                    // console.log(response.output);
-
-                    // console.log("-- post processing --");
-                    // console.log(chatbot_output)
                     
                     // Make links clickable
                     chatbot_output = makeLinksClickable(chatbot_output);

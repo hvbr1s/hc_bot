@@ -19,7 +19,7 @@ from langchain.chains import ConversationChain, ConversationalRetrievalChain, Re
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.vectorstores import Pinecone
 from langchain.embeddings.openai import OpenAIEmbeddings
-from llama_index import GPTSimpleVectorIndex, download_loader
+#from llama_index import GPTSimpleVectorIndex, download_loader
 
 from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
@@ -27,7 +27,7 @@ from langchain import SerpAPIWrapper, LLMChain
 from typing import List, Union
 from langchain.schema import AgentAction, AgentFinish, HumanMessage
 from pathlib import Path
-from llama_index import download_loader
+#from llama_index import download_loader
 
 import re
 
@@ -56,7 +56,7 @@ web3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
 #Initialize LLM
 llm=ChatOpenAI(
     openai_api_key=os.environ['OPENAI_API_KEY'],
-    temperature=0,
+    temperature=0.0,
     model_name='gpt-3.5-turbo'
     #model_name='gpt-4'
 )
@@ -68,15 +68,16 @@ pinecone.init(api_key=os.environ['PINECONE_API_KEY'], enviroment=os.environ['PIN
 pinecone.whoami()
 index_name = 'hc'
 #index_name = 'hctest'
+#index_name = 'academyzd'
 index = pinecone.Index(index_name)
 
 embed_model = "text-embedding-ada-002"
 
 primer = """
 
-You are Amy, a highly intelligent and helpful virtual assistant designed to support Ledger, a French cryptocurrency company led by CEO Pascal Gauthier. Your primary responsibility is to assist Ledger customer support agents by providing accurate answers to their questions. If a question is unclear or lacks detail, ask for more information instead of making assumptions. If you are unsure of an answer, be honest and seek clarification.
+You are Samantha, a highly intelligent and helpful virtual assistant designed to support Ledger, a French cryptocurrency company led by CEO Pascal Gauthier. Your primary responsibility is to assist Ledger customer support agents by providing accurate answers to their questions. If a question is unclear or lacks detail, ask for more information instead of making assumptions. If you are unsure of an answer, be honest and seek clarification.
 
-Customers may ask about various Ledger products, including the Ledger Nano S (no battery, low storage), Nano X (Bluetooth, large storage, has a battery), Nano S Plus (large storage, no Bluetooth, no battery), Ledger Stax (unreleased), and Ledger Live.
+Agents may ask about various Ledger products, including the Ledger Nano S (no battery, low storage), Nano X (Bluetooth, large storage, has a battery), Nano S Plus (large storage, no Bluetooth, no battery), Ledger Stax (unreleased), and Ledger Live.
 The official Ledger store is located at https://shop.ledger.com/. For authorized resellers, please visit https://www.ledger.com/reseller/ , do not modify or share any other links for these purposes. 
 
 When agents inquire about tokens, crypto or coins supported in Ledger Live , it is crucial to strictly use the provided Crypto Asset List link to verify support. 
@@ -95,8 +96,8 @@ Here's a guide on using the Crypto Asset List:
 
 VERY IMPORTANT:
 
-- Always mention the source of your information (URL link) when providing answers, such as an official Help Center article or tutorial. If possible, include a direct link to the relevant resource in your response.
-- Provide the correct URL link to relevant Help Center articles or tutorials when responding. Do not share a link if uncertain of its accuracy.
+- Always mention the source of your information (URL link) when providing answers, such as an official Help Center or Acedemy article or tutorial. If possible, include a direct link to the relevant resource in your response.
+- Provide the correct URL link to relevant Help Center or Academy articles or tutorials when responding. Do not share a link if uncertain of its accuracy.
 - Direct users who want to learn more about Ledger products or compare devices to https://www.ledger.com/.
 - Updating or downloading Ledger Live must always be done via this link: https://www.ledger.com/ledger-live
 - Share this list for tips on keeping your recovery phrase safe: https://support.ledger.com/hc/en-us/articles/360005514233-How-to-keep-your-24-word-recovery-phrase-and-PIN-code-safe-?docs=true/
@@ -165,7 +166,8 @@ def react_description():
         res_query = index.query(xq, top_k=5, include_metadata=True)
 
         contexts = [item['metadata']['text'] for item in res_query['matches']]
-        augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+ user_input + "? Please provide a comprehensive answer to the question, and make sure to incorporate relevant URL links from the previous context. NEVER enclose the links in parentheses. Do not share a link that's not explicitly included in the previous context."
+
+        augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "QUESTION: " + "\n" +  user_input + "? Please provide a comprehensive answer to the question in the tone of a patient teacher, and make sure to incorporate relevant URL links from the previous context. Do NOT include a link that is not included in the CONTEXT."
         print(augmented_query)
 
         res = openai.ChatCompletion.create(
@@ -178,7 +180,6 @@ def react_description():
             ]
         )
         response = res['choices'][0]['message']['content']
-        #response = re.sub(r'<.*?>|(%3C/li%3E|</p>|</li>|</p></li>|\.?</p></li>|</li>)\?docs=true|\.?support=true', '-', response)
         print(response)
         return jsonify({'output': response})
     except ValueError as e:

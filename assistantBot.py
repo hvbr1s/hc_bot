@@ -167,7 +167,7 @@ def react_description():
 
         contexts = [item['metadata']['text'] for item in res_query['matches']]
 
-        augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "QUESTION: " + "\n" +  user_input + "? Please provide a comprehensive answer to the question in the tone of a patient teacher, and make sure to incorporate relevant URL links from the previous context. Do NOT include a link that is not included in the CONTEXT."
+        augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "QUESTION: " + "\n" +  user_input + "? Please provide a comprehensive answer to the question in the tone of a patient teacher, and make sure to incorporate relevant URL links from the previous context. NEVER enclose the links in parentheses. Do not share a link that's not explicitly included in the previous CONTEXT."
         print(augmented_query)
 
         res = openai.ChatCompletion.create(

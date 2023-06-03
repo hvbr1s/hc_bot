@@ -38,7 +38,6 @@ history = ChatMessageHistory()
 
 env_vars = [
     'OPENAI_API_KEY',
-    'SERPAPI_API_KEY',
     'ALCHEMY_API_KEY',
     'PINECONE_API_KEY',
     'PINECONE_ENVIRONMENT',

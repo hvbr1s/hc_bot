@@ -8,6 +8,5 @@ pinecone_client==2.2.1
 python-dotenv==1.0.0
 web3==6.4.0
 uuid
-os
 eth-account
 pathlib

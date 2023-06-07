@@ -57,7 +57,6 @@ llm=ChatOpenAI(
     openai_api_key=os.environ['OPENAI_API_KEY'],
     temperature=0.0,
     model_name='gpt-3.5-turbo'
-    #model_name='gpt-4'
 )
 
 
@@ -65,9 +64,8 @@ llm=ChatOpenAI(
 
 pinecone.init(api_key=os.environ['PINECONE_API_KEY'], enviroment=os.environ['PINECONE_ENVIRONMENT'])
 pinecone.whoami()
-#index_name = 'hc'
-#index_name = 'hctest'
-index_name = 'academyzd'
+index_name = 'hc'
+#index_name = 'academyzd'
 index = pinecone.Index(index_name)
 
 embed_model = "text-embedding-ada-002"
@@ -166,7 +164,8 @@ def react_description():
 
         contexts = [item['metadata']['text'] for item in res_query['matches']]
 
-        augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "QUESTION: " + "\n" +  user_input + "? Please provide a comprehensive answer to the question in the tone of a patient teacher, and make sure to incorporate relevant URL links from the previous context. NEVER enclose the links in parentheses. Do not share a link that's not explicitly included in the previous CONTEXT."
+        #augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "QUESTION: " + "\n" +  user_input + "? Please provide a comprehensive answer to the question in the tone of a patient teacher, and make sure to incorporate relevant URL links from the previous context. NEVER enclose the links in parentheses. Do not share a link that's not explicitly included in the previous CONTEXT."
+        augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "QUESTION: " + "\n\n" +  user_input + "? Please provide a comprehensive answer to the question in the tone of a patient teacher, and make sure to incorporate relevant URL links from the previous CONTEXT. NEVER enclose the links in parentheses. Avoid sharing a link that's not explicitly included in the previous CONTEXT."
         print(augmented_query)
 
         res = openai.ChatCompletion.create(

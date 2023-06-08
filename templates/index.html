@@ -7,17 +7,16 @@
     <title>Knowledge Bot</title>
     <style>
         body {
-            background-image: url('/home/dan/langchain_projects/hcBot/templates/ethreum_prism_png.png');
             background-repeat: no-repeat;
             background-size: cover;
             display: flex;
             flex-direction: column;
             font-family: "Open Sans", sans-serif;
-            background-color: rgb(53, 53, 60);
-            color: rgba(255, 255, 255, 0.945);
+            background-color: white;
+            color: black;
             padding: 12px;
             font-family: 'Press Start 2P', cursive;
-        }
+        } 
 
         button {
             display: flex;
@@ -109,6 +108,9 @@
             transform: translate(-2px, 2px);
         }
 
+        #submit-btn:disabled {
+            background: grey; // or any other style you want
+        }
 
         .response-container {
             margin-top: 16px;
@@ -178,8 +180,7 @@
 
     </style>
 </head>
-<body>
-    <body style="background-image: url('/home/dan/langchain_projects/hcBot/templates/ethreum_prism_png.png'); background-repeat: no-repeat; background-size: cover; display: flex; flex-direction: column; font-family: 'Open Sans', sans-serif; background-color: rgb(53, 53, 60); color: rgba(255, 255, 255, 0.945); padding: 12px; font-family: 'Press Start 2P', cursive;">
+<body style="background-color: white; color: black; padding: 12px; font-family: 'Press Start 2P', cursive;">
     <h1>Knowledge Bot&#128302;</h1>
     <div class="conversation-wrapper">
         <div id="conversation-container"></div>
@@ -344,6 +345,7 @@
             event.preventDefault();
             var input_text = $('#input').val();
             $('.loading').show();
+            $('#submit-btn').prop('disabled', true); // Disable the submit button
             $.ajax({
                 type: 'POST',
                 url: '/api',
@@ -361,7 +363,6 @@
                     // Convert chatbot_output to HTML using Showdown
                     var chatbot_output = conv.makeHtml(response.output);
                     
-                    
                     // Make links clickable
                     chatbot_output = makeLinksClickable(chatbot_output);
 
@@ -371,10 +372,15 @@
 
                 error: function() {
                     $('.loading').hide();
+                },
+
+                complete: function() {
+                    $('#submit-btn').prop('disabled', false); // Enable the submit button again when AJAX request completes
                 }
             });
         });
     });
+
 
     fithEle.style.display = 'flex'
 </script>

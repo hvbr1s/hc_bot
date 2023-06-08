@@ -1,5 +1,5 @@
 # Ledger Help Center Bot
-A GPT-powered AI bot designed to interact with the Ledger Help Center via natural language queries.
+A GPT-powered AI bot designed to interact with the Ledger Help Center and Ledger Academuy via natural language queries.
 
 Live at: https://hc-bot.onrender.com/
 

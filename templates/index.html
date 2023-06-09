@@ -3,9 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <title>Knowledge Bot</title>
     <style>
+
+        @font-face {
+            font-family: 'HM Alpha Mono';
+            src: url('./fonts/BBALP00A.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         body {
             background-repeat: no-repeat;
             background-size: cover;
@@ -15,8 +24,13 @@
             background-color: white;
             color: black;
             padding: 12px;
-            font-family: 'Press Start 2P', cursive;
+            --text-font-family: 'Inter', sans-serif;
+            --heading-font-family: 'HM Alpha Mono', sans-serif;    
         } 
+
+        h1 {
+            font-family: var(--heading-font-family);
+            }
 
         button {
             display: flex;
@@ -178,27 +192,31 @@
             animation: typewriter 1s steps(50, end) forwards;
         }
 
+        p {
+            font-family: var(--text-font-family);
+        }
+
     </style>
 </head>
 <body style="background-color: white; color: black; padding: 12px; font-family: 'Press Start 2P', cursive;">
-    <h1>Knowledge Bot&#128302;</h1>
+    <h1>LEDGER KNOWLEDGE BOT &#128302;</h1>
     <div class="conversation-wrapper">
         <div id="conversation-container"></div>
     </div>
     <form>
-        <label for="input">Type your question:</label>
+        <label for="input"><p><b>Type your question:</b></p></label>
         <input type="text" name="input" id="input">
         <div id="warning" style="display:none;color:red;margin-top: 8px; margin-bottom: 8px; font-size: small;">&#9888;&#65039;Please remove email/street addresses.</div>
         <input type="submit" value="Submit" id="submit-btn">
     </form>
     
 
-    <div class="loading" style="display:none;">Thinking...</div>
+    <div class="loading" style="display:none;"><p><b>Thinking...&#129300;</b></p></div>
 
 
     <section id="try-again">
         <a href="http://127.0.0.1:8000/gpt">
-            <button class="try-button"><b>New chat</b></button>
+            <button class="try-button">New chat</button>
         </a>
     </section>
 
@@ -345,7 +363,7 @@
             event.preventDefault();
             var input_text = $('#input').val();
             $('.loading').show();
-            $('#submit-btn').prop('disabled', true); // Disable the submit button
+            $('#submit-btn').prop('disabled', true);
             $.ajax({
                 type: 'POST',
                 url: '/api',
@@ -375,7 +393,7 @@
                 },
 
                 complete: function() {
-                    $('#submit-btn').prop('disabled', false); // Enable the submit button again when AJAX request completes
+                    $('#submit-btn').prop('disabled', false);
                 }
             });
         });

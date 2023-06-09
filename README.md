@@ -1,8 +1,8 @@
 # Ledger Knowledge Bot
 
-A GPT-powered AI bot designed to interact with the Ledger Help Center and Ledger Academy through natural language queries.
+An experimental GPT-powered AI bot designed to interact with the Ledger Help Center and Ledger Academy through natural language queries.
 
-Available at: https://hc-bot.onrender.com/
+Available in beta at: https://hc-bot.onrender.com/
 
 Access to the bot is currently limited to Ledger employees.
 

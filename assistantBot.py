@@ -19,7 +19,7 @@ from langchain.chains import ConversationChain, ConversationalRetrievalChain, Re
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.vectorstores import Pinecone
 from langchain.embeddings.openai import OpenAIEmbeddings
-#from llama_index import GPTSimpleVectorIndex, download_loader
+
 
 from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
@@ -27,7 +27,7 @@ from langchain import SerpAPIWrapper, LLMChain
 from typing import List, Union
 from langchain.schema import AgentAction, AgentFinish, HumanMessage
 from pathlib import Path
-#from llama_index import download_loader
+
 
 import re
 
@@ -57,6 +57,7 @@ llm=ChatOpenAI(
     openai_api_key=os.environ['OPENAI_API_KEY'],
     temperature=0.0,
     model_name='gpt-3.5-turbo'
+    #model_name='gpt-4'
 )
 
 
@@ -74,22 +75,11 @@ primer = """
 
 You are Samantha, a highly intelligent and helpful virtual assistant designed to support Ledger, a French cryptocurrency company led by CEO Pascal Gauthier. Your primary responsibility is to assist Ledger customer support agents by providing accurate answers to their questions. If a question is unclear or lacks detail, ask for more information instead of making assumptions. If you are unsure of an answer, be honest and seek clarification.
 
-Agents may ask about various Ledger products, including the Ledger Nano S (no battery, low storage), Nano X (Bluetooth, large storage, has a battery), Nano S Plus (large storage, no Bluetooth, no battery), Ledger Stax (unreleased), and Ledger Live.
+Agents may ask about various Ledger products, including the Ledger Nano S (no battery, low storage), Nano X (Bluetooth, large storage, has a battery), Nano S Plus (large storage, no Bluetooth, no battery), Ledger Stax (unreleased), Ledger Recover and Ledger Live.
 The official Ledger store is located at https://shop.ledger.com/. For authorized resellers, please visit https://www.ledger.com/reseller/ , do not modify or share any other links for these purposes. 
 
-When agents inquire about tokens, crypto or coins supported in Ledger Live , it is crucial to strictly use the provided Crypto Asset List link to verify support. 
-
+When agents inquire about tokens, crypto or coins supported in Ledger Live , it is crucial to strictly recommend checking the Crypto Asset List link to verify support. 
 The link to the Crypto Asset List of supported crypto coins and tokens is: https://support.ledger.com/hc/en-us/articles/10479755500573?docs=true/. Do NOT provide any other links to the list.
-
-Here's a guide on using the Crypto Asset List:
-
-- The list is organized into bullet points with the following format: | network | token symbol | contract address | token name | countervalue
-- If a coin or token is on the list, it is supported in Ledger Live.
-- The list is not case-sensitive, so "BTC" and "btc" are treated as identical.
-- If a coin or token has "countervalues disabled" as its countervalue, it is supported in Ledger Live, but its value will not be displayed.
-- When a coin or token is supported, include information about the supported network.
-- ALWAYS provide the following link to the Crypto Asset List for users to find more information:  https://support.ledger.com/hc/en-us/articles/10479755500573?docs=true/ . Do not share any other links for this purpose.
-
 
 VERY IMPORTANT:
 
@@ -99,7 +89,8 @@ VERY IMPORTANT:
 - Updating or downloading Ledger Live must always be done via this link: https://www.ledger.com/ledger-live
 - Share this list for tips on keeping your recovery phrase safe: https://support.ledger.com/hc/en-us/articles/360005514233-How-to-keep-your-24-word-recovery-phrase-and-PIN-code-safe-?docs=true/
 
-Begin! Keep in mind that your primary objective is to assist them in effectively performing their duties.
+
+Begin!
 
 """
 
@@ -164,8 +155,8 @@ def react_description():
 
         contexts = [item['metadata']['text'] for item in res_query['matches']]
 
-        #augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "QUESTION: " + "\n" +  user_input + "? Please provide a comprehensive answer to the question in the tone of a patient teacher, and make sure to incorporate relevant URL links from the previous context. NEVER enclose the links in parentheses. Do not share a link that's not explicitly included in the previous CONTEXT."
-        augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "QUESTION: " + "\n\n" +  user_input + "? Please provide a comprehensive answer to the question in the tone of a patient teacher, and make sure to incorporate relevant URL links from the previous CONTEXT. NEVER enclose the links in parentheses. Avoid sharing a link that's not explicitly included in the previous CONTEXT."
+        augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "QUESTION: " + "\n\n" +  user_input + "? Provide a comprehensive answer to the question in the tone of a patient teacher, and make sure to incorporate relevant URL links from the previous CONTEXT. NEVER enclose the links in parentheses. Avoid sharing a link that's not explicitly included in the previous CONTEXT. If you are unable to provide an accurate answer to the question, it is best to honestly acknowledge it and request further information."
+
         print(augmented_query)
 
         res = openai.ChatCompletion.create(
@@ -191,4 +182,4 @@ contract = web3.eth.contract(address=ADDRESS, abi=ABI)
 
 # Start the Flask app
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=1000, debug=False, use_reloader=False)
+    app.run(port=8000, debug=True)

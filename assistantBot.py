@@ -32,7 +32,6 @@ from pathlib import Path
 import re
 
 
-
 load_dotenv()
 history = ChatMessageHistory()
 
@@ -48,25 +47,18 @@ os.environ['WEB3_PROVIDER'] = f"https://polygon-mumbai.g.alchemy.com/v2/{os.envi
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 PINECONE_ENVIRONMENT = os.getenv("PINECONE_ENVIRONMENT")
 ORGANIZATION = os.getenv("ORGANIZATION")
+openai.api_key=os.environ['OPENAI_API_KEY']
 
 # Initialize web3
 web3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
-
-#Initialize LLM
-llm=ChatOpenAI(
-    openai_api_key=os.environ['OPENAI_API_KEY'],
-    temperature=0.0,
-    model_name='gpt-3.5-turbo'
-    #model_name='gpt-4'
-)
 
 
 # Prepare augmented query
 
 pinecone.init(api_key=os.environ['PINECONE_API_KEY'], enviroment=os.environ['PINECONE_ENVIRONMENT'])
 pinecone.whoami()
-index_name = 'hc'
-#index_name = 'academyzd'
+#index_name = 'hc'
+index_name = 'academyzd'
 index = pinecone.Index(index_name)
 
 embed_model = "text-embedding-ada-002"
@@ -107,6 +99,7 @@ def authenticate(signature):
     message_hash = encode_defunct(text=message)
     signed_message = w3.eth.account.recover_message(message_hash, signature=signature)
     balance = int(contract.functions.balanceOf(signed_message).call())
+    print(balance)
     if balance > 0:
         token = uuid.uuid4().hex
         response = make_response(redirect('/gpt'))
@@ -124,10 +117,12 @@ def has_auth_token(request):
 @app.route("/")
 def home():
     return render_template("auth.html")
+    #return render_template('index.html')
 
 @app.route("/auth")
 def auth():
     signature = request.args.get("signature")
+    print(signature)
     response = authenticate(signature)
     return response
 
@@ -141,7 +136,6 @@ def gpt():
 @app.route('/api', methods=['POST'])
 def react_description():
     user_input = request.json.get('user_input')
-    query = user_input
     try:
 
         res_embed = openai.Embedding.create(
@@ -160,9 +154,11 @@ def react_description():
         print(augmented_query)
 
         res = openai.ChatCompletion.create(
-            
-            model="gpt-3.5-turbo",
-            #model="gpt-4",
+            temperature=0.2,
+            #model='gpt-4',
+            #model="gpt-3.5-turbo-16k",
+            model="gpt-3.5-turbo-0613",
+            #model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": primer},
                 {"role": "user", "content": augmented_query}

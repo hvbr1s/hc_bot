@@ -204,7 +204,7 @@
         <div id="conversation-container"></div>
     </div>
     <form>
-        <label for="input"><p><b>Type your question:</b></p></label>
+        <label for="input"><p><b>TYPE YOUR QUESTION:</b></p></label>
         <input type="text" name="input" id="input">
         <div id="warning" style="display:none;color:red;margin-top: 8px; margin-bottom: 8px; font-size: small;">&#9888;&#65039;Please remove email/street addresses.</div>
         <input type="submit" value="Submit" id="submit-btn">
@@ -247,20 +247,18 @@
     });
 
 
-
-
-
-    function makeLinksClickable(text) {
-        var urlPattern = /((https?:\/\/)|(www\.))[^\s]+/ig;
-        return text.replace(urlPattern, function(match) {
-            if (match.slice(-1) === '.') {
-                match = match.slice(0, -1);
-            }
-            var cleanedUrl = cleanUrlPatterns(match);
-            var prefix = /^https?:\/\//.test(cleanedUrl) ? '' : 'http://';
-            return '<a href="' + prefix + cleanedUrl + '" target="_blank">' + cleanedUrl + '</a>';
-        });
-    }
+    // No longer needed since ChatGPT now outputs hyperlinks 
+    //function makeLinksClickable(text) {
+    //     var urlPattern = /((https?:\/\/)|(www\.))[^\s]+/ig;
+    //     return text.replace(urlPattern, function(match) {
+    //         if (match.slice(-1) === '.') {
+    //             match = match.slice(0, -1);
+    //         }
+    //         var cleanedUrl = cleanUrlPatterns(match);
+    //         var prefix = /^https?:\/\//.test(cleanedUrl) ? '' : 'http://';
+    //         return '<a href="' + prefix + cleanedUrl + '" target="_blank">' + cleanedUrl + '</a>';
+    //     });
+    // }
 
 
     function cleanUrlPatterns(url) {
@@ -314,9 +312,9 @@
                 response_div.innerHTML = text;
 
                 if (isTag) {
-                    setTimeout(typeNextChar, 10);
+                    setTimeout(typeNextChar, 5);
                 } else {
-                    setTimeout(typeNextChar, 10);
+                    setTimeout(typeNextChar, 5);
                 }
             } else {
                 if (typeof callback === "function") {
@@ -326,6 +324,15 @@
         }
 
         typeNextChar();
+    }
+
+    function makeLinksOpenInNewTab(input) {
+        var dom = new DOMParser().parseFromString(input, 'text/html');
+        var links = dom.getElementsByTagName('a');
+        for(var i=0; i<links.length; i++) {
+            links[i].setAttribute('target', '_blank');
+        }
+        return dom.body.innerHTML;
     }
 
 
@@ -348,14 +355,14 @@
     }
 
 
-    function updateUrls(text) {
-        var urlPattern = /((https?:\/\/)|(www\.))[^\s]+/ig;
-        return text.replace(urlPattern, function(match) {
-            var cleanedUrl = cleanUrlPatterns(match);
-            var prefix = /^https?:\/\//.test(cleanedUrl) ? '' : 'http://';
-            return '<a href="' + prefix + cleanedUrl + '" target="_blank">' + cleanedUrl + '</a>';
-        });
-    }
+    // function updateUrls(text) {
+    //     var urlPattern = /((https?:\/\/)|(www\.))[^\s]+/ig;
+    //     return text.replace(urlPattern, function(match) {
+    //         var cleanedUrl = cleanUrlPatterns(match);
+    //         var prefix = /^https?:\/\//.test(cleanedUrl) ? '' : 'http://';
+    //         return '<a href="' + prefix + cleanedUrl + '" target="_blank">' + cleanedUrl + '</a>';
+    //     });
+    // }
 
 
     $(function() {
@@ -382,7 +389,10 @@
                     var chatbot_output = conv.makeHtml(response.output);
                     
                     // Make links clickable
-                    chatbot_output = makeLinksClickable(chatbot_output);
+                    //chatbot_output = makeLinksClickable(chatbot_output);
+
+                    //Make links open in new tab
+                    chatbot_output = makeLinksOpenInNewTab(chatbot_output);
 
                     updateConversation(user_input, chatbot_output);
                     $('#input').val('');

@@ -63,17 +63,22 @@
   <button id="chat" class="chatty"><b>Start a chat</b></button>
 
   <div id="display"></div>
+  <div id="error-message" style="display:none;"></div>
+
 
   <script type="text/javascript">
     
     let account = null;
 
     const connect = async () => {
+    console.log("connect function called")
     if (window.ethereum) {
+        console.log("ethereum provider found");
         await window.ethereum.request({ method: 'eth_requestAccounts' });
         window.web3 = new Web3(window.ethereum);
 
         const accounts = await web3.eth.getAccounts();
+        console.log("accounts retrieved: ", accounts);
         account = accounts[0];
         const formattedAddress = `${account?.slice(0, 6)}...${account?.slice(-4)}`;
         document.getElementById('wallet-address').textContent = formattedAddress;
@@ -82,13 +87,18 @@
     };
 
     const startChat = async () => {
-    try {
-        const signature = await web3.eth.personal.sign("Access to chat bot", account);
-        await fetch('/auth?signature=' + signature);
-        window.location.href = '/gpt';
-    } catch (error) {
-        showError(error.message);
-    }
+        if (!account) {
+            return showError('No account found. Please connect your wallet.');
+        }
+        try {
+            const signer = String(account)
+            console.log(signer)
+            const signature = await web3.eth.personal.sign("Access to chat bot", signer,"");
+            console.log(signature)
+            window.location.href = `/auth?signature=${encodeURIComponent(signature)}`;
+        } catch (error) {
+            showError(error.message);
+        }
     };
 
     const showError = (message) => {

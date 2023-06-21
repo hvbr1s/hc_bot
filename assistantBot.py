@@ -149,7 +149,7 @@ def react_description():
 
         contexts = [item['metadata']['text'] for item in res_query['matches']]
 
-        augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "QUESTION: " + "\n\n" +  user_input + "? Provide a comprehensive answer to the question in the tone of a patient teacher, and make sure to incorporate relevant URL links from the previous CONTEXT. NEVER enclose the links in parentheses. Avoid sharing a link that's not explicitly included in the previous CONTEXT. If you are unable to provide an accurate answer to the question, it is best to honestly acknowledge it and request further information."
+        augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "QUESTION: " + "\n\n" +  user_input + "? Provide a short answer to the question and make sure to incorporate relevant URL links from the previous CONTEXT. NEVER enclose the links in parentheses. Avoid sharing a link that's not explicitly included in the previous CONTEXT. If you are unable to provide an accurate answer to the question, it is best to honestly acknowledge it and request further information."
 
         print(augmented_query)
 

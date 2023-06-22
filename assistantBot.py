@@ -1,39 +1,17 @@
 import os
 import uuid
 import json
-from typing import Callable, List, Union
-
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, make_response, redirect, jsonify
 from web3 import Web3
 from eth_account.messages import encode_defunct
-
 import pinecone
 import openai
-
-from langchain import LLMChain
-from langchain.agents import initialize_agent, load_tools, ZeroShotAgent, AgentExecutor, Tool, LLMSingleActionAgent, AgentOutputParser
-from langchain.prompts import BaseChatPromptTemplate
-from langchain.memory import ConversationBufferMemory, ChatMessageHistory
-from langchain.chains import ConversationChain, ConversationalRetrievalChain, RetrievalQA
-from langchain.chains.conversation.memory import ConversationBufferWindowMemory
-from langchain.vectorstores import Pinecone
-from langchain.embeddings.openai import OpenAIEmbeddings
-
-
-from langchain.llms import OpenAI
-from langchain.chat_models import ChatOpenAI
-from langchain import SerpAPIWrapper, LLMChain
-from typing import List, Union
-from langchain.schema import AgentAction, AgentFinish, HumanMessage
-from pathlib import Path
-
-
 import re
-
+from langchain.vectorstores import Pinecone
 
 load_dotenv()
-history = ChatMessageHistory()
+
 
 env_vars = [
     'OPENAI_API_KEY',

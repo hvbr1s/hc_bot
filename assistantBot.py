@@ -130,7 +130,7 @@ def react_description():
 
         contexts = [item['metadata']['text'] for item in res_query['matches']]
 
-        augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "QUESTION: " + "\n\n" + '"' + query.user_input + '" ' + "Please provide an answer to the question."
+        augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "QUESTION: " + "\n\n" + '"' + user_input + '" ' + "Please provide an answer to the question."
 
         print(augmented_query)
 

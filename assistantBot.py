@@ -136,9 +136,9 @@ def react_description():
 
         res = openai.ChatCompletion.create(
             temperature=0.0,
-            #model='gpt-4',
+            model='gpt-4',
             #model="gpt-3.5-turbo-16k",
-            model="gpt-3.5-turbo-0613",
+            #model="gpt-3.5-turbo-0613",
             #model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": primer},

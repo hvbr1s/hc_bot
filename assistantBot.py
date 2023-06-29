@@ -128,7 +128,7 @@ def react_description():
 
         res_query = index.query(xq, top_k=5, include_metadata=True)
 
-        contexts = [item['metadata']['text'] for item in res_query['matches']]
+        contexts = [item['metadata']['text'] for item in res_query['matches'] if item['score'] > 0.8]
 
         augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "QUESTION: " + "\n\n" + '"' + user_input + '" ' + "Please provide an answer to the question."
 

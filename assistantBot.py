@@ -130,7 +130,7 @@ def react_description():
 
         contexts = [item['metadata']['text'] for item in res_query['matches'] if item['score'] > 0.8]
 
-        augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "QUESTION: " + "\n\n" + '"' + user_input + '" ' + "Please provide an answer to the question."
+        augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "USER QUESTION: " + "\n\n" + '"' + user_input + '" ' + "\n\n" + "YOUR RESPONSE: "
 
         print(augmented_query)
 
@@ -139,7 +139,6 @@ def react_description():
             model='gpt-4',
             #model="gpt-3.5-turbo-16k",
             #model="gpt-3.5-turbo-0613",
-            #model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": primer},
                 {"role": "user", "content": augmented_query}

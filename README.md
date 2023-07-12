@@ -1,4 +1,4 @@
-# Ledger Knowledge Bot
+# SamanthaBot
 
 An experimental GPT-powered AI bot designed to interact with the Ledger Help Center and Ledger Academy through natural language queries.
 

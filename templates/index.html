@@ -246,19 +246,18 @@
         });
     });
 
-
-    // No longer needed since ChatGPT now outputs hyperlinks 
-    //function makeLinksClickable(text) {
-    //     var urlPattern = /((https?:\/\/)|(www\.))[^\s]+/ig;
-    //     return text.replace(urlPattern, function(match) {
-    //         if (match.slice(-1) === '.') {
-    //             match = match.slice(0, -1);
-    //         }
-    //         var cleanedUrl = cleanUrlPatterns(match);
-    //         var prefix = /^https?:\/\//.test(cleanedUrl) ? '' : 'http://';
-    //         return '<a href="' + prefix + cleanedUrl + '" target="_blank">' + cleanedUrl + '</a>';
-    //     });
-    // }
+ 
+    function makeLinksClickable(text) {
+        var urlPattern = /((https?:\/\/)|(www\.))[^\s]+/ig;
+        return text.replace(urlPattern, function(match) {
+            if (match.slice(-1) === '.') {
+                match = match.slice(0, -1);
+            }
+            var cleanedUrl = cleanUrlPatterns(match);
+            var prefix = /^https?:\/\//.test(cleanedUrl) ? '' : 'http://';
+            return '<a href="' + prefix + cleanedUrl + '" target="_blank">' + cleanedUrl + '</a>';
+        });
+    }
 
 
     function cleanUrlPatterns(url) {

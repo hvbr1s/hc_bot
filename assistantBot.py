@@ -73,6 +73,9 @@ Begin!
 # Define Flask app
 app = Flask(__name__, static_folder='static')
 
+# Define user states
+user_states = {}
+
 # Define authentication function
 def authenticate(signature):
     w3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))

@@ -5,14 +5,14 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from dotenv import main
 import pinecone
 import openai
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
-from web3 import Web3
-from eth_account.messages import encode_defunct
+# from web3 import Web3
+# from eth_account.messages import encode_defunct
+# from typing import Optional
 
-
-import re
 
 main.load_dotenv()
 
@@ -24,13 +24,13 @@ env_vars = [
 ]
 
 os.environ.update({key: os.getenv(key) for key in env_vars})
-os.environ['WEB3_PROVIDER'] = f"https://polygon-mumbai.g.alchemy.com/v2/{os.environ['ALCHEMY_API_KEY']}"
+# os.environ['WEB3_PROVIDER'] = f"https://polygon-mumbai.g.alchemy.com/v2/{os.environ['ALCHEMY_API_KEY']}"
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 PINECONE_ENVIRONMENT = os.getenv("PINECONE_ENVIRONMENT")
 openai.api_key=os.environ['OPENAI_API_KEY']
 
-# Initialize web3
-web3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
+# # Initialize web3
+# web3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
 
 
 class Query(BaseModel):
@@ -76,6 +76,27 @@ Begin!
 # #####################################################
 
 
+# # Define authentication function
+# def authenticate(signature):
+#     w3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
+#     message = "Access to chat bot"
+#     message_hash = encode_defunct(text=message)
+#     signed_message = w3.eth.account.recover_message(message_hash, signature=signature)
+#     balance = int(contract.functions.balanceOf(signed_message).call())
+#     print(balance)
+#     if balance > 0:
+#         token = uuid.uuid4().hex
+#         response = JSONResponse(content={"redirect": "/check"})  # Use JSONResponse to set a custom response
+#         response.set_cookie("authToken", token, httponly=True, secure=True, samesite="strict")
+#         return response
+#     else:
+#         return "You don't have the required NFT!"
+
+# # Define function to check for authToken cookie
+# def has_auth_token(request):
+#     authToken = request.cookies.get("authToken")
+#     return authToken is not None
+
 # Define FastAPI app
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -85,35 +106,15 @@ user_states = {}
 
 
 # Define FastAPI endpoints
-@app.get("/")
+
+@app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
-    return templates.TemplateResponse("auth.html", {"request": request})
-    #return templates.TemplateResponse("index.html", {"request": request})
-
-# Define authentication function
-def authenticate(signature):
-    w3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
-    message = "Access to chat bot"
-    message_hash = encode_defunct(text=message)
-    signed_message = w3.eth.account.recover_message(message_hash, signature=signature)
-    balance = int(contract.functions.balanceOf(signed_message).call())
-    print(balance)
-    if balance > 0:
-        token = uuid.uuid4().hex
-        response = make_response(redirect('/check'))
-        response.set_cookie("authToken", token, httponly=True, secure=True, samesite="strict")
-        return response
-    else:
-        return "You don't have the required NFT!"
-
-# Define function to check for authToken cookie
-def has_auth_token(request):
-    authToken = request.cookies.get("authToken")
-    return authToken is not None
+    #return templates.TemplateResponse("auth.html", {"request": request})
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/_health")
-def health_check():
+async def health_check():
     return {"status": "OK"}
 
 # @app.get("/api/clerk-api-key")
@@ -121,19 +122,17 @@ def health_check():
 #     clerk_api_key = os.getenv("CLERK_API_KEY")
 #     return {"api_key": clerk_api_key}
 
-@app.route("/auth")
-def auth():
-    signature = request.args.get("signature")
-    print(signature)
-    response = authenticate(signature)
-    return response
+# @app.get("/auth", response_class=HTMLResponse)
+# async def auth(request: Request, signature: Optional[str] = None):
+#     response = authenticate(signature)
+#     return response
 
-@app.route("/check")
-def gpt():
-    if has_auth_token(request):
-        return render_template("index.html")
-    else:
-        return redirect("/")
+# @app.get("/check", response_class=HTMLResponse)
+# async def gpt(request: Request):
+#     if has_auth_token(request):
+#         return templates.TemplateResponse("index.html", {"request": request})
+#     else:
+#         return RedirectResponse(url="/")
 
 @app.post('/gpt')
 async def react_description(query: Query):
@@ -176,15 +175,12 @@ async def react_description(query: Query):
         # Save the response to the global variable
         last_response = response
 
-
         # Save the response to a thread
         user_states[user_id] = response
         print(user_states)
-
-
-
         print(response)
         return {'output': response}
+        
     except ValueError as e:
         print(e)
         raise HTTPException(status_code=400, detail="Invalid input")

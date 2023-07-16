@@ -8,6 +8,7 @@ import openai
 from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, parse_obj_as
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -103,6 +104,7 @@ def get_user_id(request: Request):
 # Define FastAPI app
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="./static/BBALP00A.TTF")
 
 # Define limiter
 #limiter = Limiter(key_func=get_remote_address)

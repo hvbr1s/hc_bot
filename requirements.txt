@@ -6,7 +6,6 @@ openai
 pinecone_client
 python-dotenv==1.0.0
 uuid
-eth-account
 pathlib
 uvicorn
 fastapi

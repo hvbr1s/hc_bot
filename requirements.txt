@@ -10,3 +10,4 @@ eth-account
 pathlib
 uvicorn
 fastapi
+jinja2

@@ -11,3 +11,4 @@ eth-account
 pathlib
 uvicorn
 fastapi
+pydantic

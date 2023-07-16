@@ -197,6 +197,34 @@
             font-family: var(--text-font-family);
         }
 
+        /* Mobile phones (landscape) and smaller */
+        @media (max-width: 640px) {
+          input[type="text"] {
+            width: 50%; /* or whatever width you prefer */
+          }
+        }
+        
+        /* Tablets and smaller */
+        @media (max-width: 768px) {
+          input[type="text"] {
+            width: 50%; /* or whatever width you prefer */
+          }
+        }
+        
+        /* Smaller desktop screens and smaller */
+        @media (max-width: 1024px) {
+          input[type="text"] {
+            width: 35%; /* or whatever width you prefer */
+          }
+        }
+        
+        /* Larger desktop screens */
+        @media (min-width: 1025px) {
+          input[type="text"] {
+            width: 25%; /* this is your current width */
+          }
+        }
+
     </style>
      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>

@@ -9,6 +9,10 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 # from web3 import Web3
 # from eth_account.messages import encode_defunct
 # from typing import Optional
@@ -94,6 +98,19 @@ templates = Jinja2Templates(directory="templates")
 #last_response = None
 user_states = {}
 
+# Define limiter
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
+
+@app.exception_handler(RateLimitExceeded)
+async def custom_rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+        content={"detail": "Too many requests, please try again in a minute."},
+    )
+
 
 # Define FastAPI endpoints
 
@@ -125,8 +142,9 @@ async def health_check():
 #         return RedirectResponse(url="/")
 
 @app.post('/gpt')
+@limiter.limit("10/minute")
 async def react_description(query: Query):
-
+    
     global last_response
     user_id = query.user_id
     if user_id not in user_states:

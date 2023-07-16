@@ -218,7 +218,7 @@
 
 
     <section id="try-again">
-        <a href="http://127.0.0.1:8008/">
+        <a href="https://hc-bot.onrender.com/">
             <button class="try-button">New chat</button>
         </a>
     </section>
@@ -391,7 +391,7 @@
             $('#submit-btn').prop('disabled', true);
             $.ajax({
                 type: 'POST',
-                url: ' http://127.0.0.1:8008/gpt',
+                url: ' https://hc-bot.onrender.com/gpt',
                 data: JSON.stringify({user_input: input_text, user_id: user_id}),
                 contentType: 'application/json',
 

@@ -1,6 +1,6 @@
 # SamanthaBot
 
-An experimental GPT-powered AI bot designed to interact with the Ledger Help Center and Ledger Academy through natural language queries.
+An experimental GPT-powered web bot designed to interact with the Ledger Help Center and Ledger Academy through natural language queries.
 
 Available in beta at: https://hc-bot.onrender.com/
 

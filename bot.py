@@ -5,7 +5,7 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from dotenv import main
 import pinecone
 import openai
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, parse_obj_as

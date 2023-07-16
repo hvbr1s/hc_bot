@@ -16,14 +16,6 @@ from pydantic import BaseModel
 
 main.load_dotenv()
 
-env_vars = [
-    'OPENAI_API_KEY',
-    'ALCHEMY_API_KEY',
-    'PINECONE_API_KEY',
-    'PINECONE_ENVIRONMENT',
-]
-
-os.environ.update({key: os.getenv(key) for key in env_vars})
 # os.environ['WEB3_PROVIDER'] = f"https://polygon-mumbai.g.alchemy.com/v2/{os.environ['ALCHEMY_API_KEY']}"
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 PINECONE_ENVIRONMENT = os.getenv("PINECONE_ENVIRONMENT")

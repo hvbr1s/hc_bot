@@ -10,3 +10,4 @@ pathlib
 uvicorn
 fastapi
 jinja2
+slowapi

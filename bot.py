@@ -87,8 +87,8 @@ user_states = {}
 # Define FastAPI endpoints
 @app.get("/")
 async def root(request: Request):
-    #return templates.TemplateResponse("auth.html", {"request": request})
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("auth.html", {"request": request})
+    #return templates.TemplateResponse("index.html", {"request": request})
 
 # Define authentication function
 def authenticate(signature):

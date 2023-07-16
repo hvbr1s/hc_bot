@@ -17,9 +17,6 @@ from pydantic import BaseModel
 main.load_dotenv()
 
 # os.environ['WEB3_PROVIDER'] = f"https://polygon-mumbai.g.alchemy.com/v2/{os.environ['ALCHEMY_API_KEY']}"
-PINECONE_API_KEY = os.environ['PINECONE_API_KEY']
-PINECONE_ENVIRONMENT = os.environ['PINECONE_ENVIRONMENT']
-openai.api_key=os.environ['OPENAI_API_KEY']
 
 # # Initialize web3
 # web3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
@@ -31,6 +28,7 @@ class Query(BaseModel):
 
 # Prepare augmented query
 
+openai.api_key=os.environ['OPENAI_API_KEY']
 pinecone.init(api_key=os.environ['PINECONE_API_KEY'], enviroment=os.environ['PINECONE_ENVIRONMENT'])
 pinecone.whoami()
 index_name = 'hc'

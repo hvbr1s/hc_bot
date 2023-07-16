@@ -416,8 +416,13 @@
                     $('#input').val('');
                 },
 
-                error: function() {
+                error: function(jqXHR, textStatus, errorThrown) {
                     $('.loading').hide();
+                    // Parse the error response (which should be JSON)
+                    var errorResponse = JSON.parse(jqXHR.responseText);
+                    var errorMessage = errorResponse.detail;
+                    // Display the error message to the user
+                    alert(errorMessage);
                 },
 
                 complete: function() {

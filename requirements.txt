@@ -11,3 +11,4 @@ web3==6.4.0
 uuid
 eth-account
 pathlib
+uvicorn

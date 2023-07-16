@@ -154,7 +154,7 @@ async def health_check():
 #         return RedirectResponse(url="/")
 
 @app.post('/gpt')
-@limiter.limit("1/minute")
+@limiter.limit("1/hour")
 def react_description(query: Query, request: Request):
     
     global last_response

@@ -1,6 +1,4 @@
 eth_account==0.8.0
-flask
-Flask
 ipython==8.12.0
 langchain
 llama_index==0.6.18

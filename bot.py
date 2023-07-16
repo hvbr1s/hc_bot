@@ -8,6 +8,9 @@ import openai
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
+from web3 import Web3
+from eth_account.messages import encode_defunct
+
 
 import re
 
@@ -18,13 +21,16 @@ env_vars = [
     'ALCHEMY_API_KEY',
     'PINECONE_API_KEY',
     'PINECONE_ENVIRONMENT',
-    'CLERK_API_KEY'
 ]
 
 os.environ.update({key: os.getenv(key) for key in env_vars})
+os.environ['WEB3_PROVIDER'] = f"https://polygon-mumbai.g.alchemy.com/v2/{os.environ['ALCHEMY_API_KEY']}"
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 PINECONE_ENVIRONMENT = os.getenv("PINECONE_ENVIRONMENT")
 openai.api_key=os.environ['OPENAI_API_KEY']
+
+# Initialize web3
+web3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
 
 
 class Query(BaseModel):
@@ -81,7 +87,30 @@ user_states = {}
 # Define FastAPI endpoints
 @app.get("/")
 async def root(request: Request):
+    #return templates.TemplateResponse("auth.html", {"request": request})
     return templates.TemplateResponse("index.html", {"request": request})
+
+# Define authentication function
+def authenticate(signature):
+    w3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
+    message = "Access to chat bot"
+    message_hash = encode_defunct(text=message)
+    signed_message = w3.eth.account.recover_message(message_hash, signature=signature)
+    balance = int(contract.functions.balanceOf(signed_message).call())
+    print(balance)
+    if balance > 0:
+        token = uuid.uuid4().hex
+        response = make_response(redirect('/check'))
+        response.set_cookie("authToken", token, httponly=True, secure=True, samesite="strict")
+        return response
+    else:
+        return "You don't have the required NFT!"
+
+# Define function to check for authToken cookie
+def has_auth_token(request):
+    authToken = request.cookies.get("authToken")
+    return authToken is not None
+
 
 @app.get("/_health")
 def health_check():
@@ -91,6 +120,20 @@ def health_check():
 # def get_api_key():
 #     clerk_api_key = os.getenv("CLERK_API_KEY")
 #     return {"api_key": clerk_api_key}
+
+@app.route("/auth")
+def auth():
+    signature = request.args.get("signature")
+    print(signature)
+    response = authenticate(signature)
+    return response
+
+@app.route("/check")
+def gpt():
+    if has_auth_token(request):
+        return render_template("index.html")
+    else:
+        return redirect("/")
 
 @app.post('/gpt')
 async def react_description(query: Query):
@@ -111,7 +154,7 @@ async def react_description(query: Query):
         res_query = index.query(xq, top_k=5, include_metadata=True)
         print(res_query)
 
-        contexts = [item['metadata']['text'] for item in res_query['matches'] if item['score'] > 0.75]
+        contexts = [item['metadata']['text'] for item in res_query['matches'] if item['score'] > 0.78]
 
         prev_response_line = f"YOUR PREVIOUS RESPONSE: {last_response}\n\n-----\n\n" if last_response else ""
 

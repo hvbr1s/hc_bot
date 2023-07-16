@@ -17,8 +17,8 @@ from pydantic import BaseModel
 main.load_dotenv()
 
 # os.environ['WEB3_PROVIDER'] = f"https://polygon-mumbai.g.alchemy.com/v2/{os.environ['ALCHEMY_API_KEY']}"
-PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-PINECONE_ENVIRONMENT = os.getenv("PINECONE_ENVIRONMENT")
+PINECONE_API_KEY = os.environ['PINECONE_API_KEY']
+PINECONE_ENVIRONMENT = os.environ['PINECONE_ENVIRONMENT']
 openai.api_key=os.environ['OPENAI_API_KEY']
 
 # # Initialize web3

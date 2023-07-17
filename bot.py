@@ -173,7 +173,8 @@ def react_description(query: Query, request: Request):
         res_query = index.query(xq, top_k=5, include_metadata=True)
         print(res_query)
 
-        contexts = [item['metadata']['text'] for item in res_query['matches'] if item['score'] > 0.78]
+        #contexts = [item['metadata']['text'] for item in res_query['matches'] if item['score'] > 0.78]
+        contexts = [(item['metadata']['text'] + "\n\nSource: " + item['metadata'].get('source', 'N/A')) for item in res_query['matches'] if item['score'] > 0.78]
 
         prev_response_line = f"YOUR PREVIOUS RESPONSE: {last_response}\n\n-----\n\n" if last_response else ""
 

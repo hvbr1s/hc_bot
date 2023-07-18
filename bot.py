@@ -14,17 +14,17 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-# from web3 import Web3
-# from eth_account.messages import encode_defunct
-# from typing import Optional
+from web3 import Web3
+from eth_account.messages import encode_defunct
+from typing import Optional
 
 
 main.load_dotenv()
 
-# os.environ['WEB3_PROVIDER'] = f"https://polygon-mumbai.g.alchemy.com/v2/{os.environ['ALCHEMY_API_KEY']}"
+os.environ['WEB3_PROVIDER'] = f"https://polygon-mumbai.g.alchemy.com/v2/{os.environ['ALCHEMY_API_KEY']}"
 
-# # Initialize web3
-# web3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
+# Initialize web3
+web3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
 
 
 class Query(BaseModel):
@@ -71,26 +71,26 @@ Begin!
 # #####################################################
 
 
-# # Define authentication function
-# def authenticate(signature):
-#     w3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
-#     message = "Access to chat bot"
-#     message_hash = encode_defunct(text=message)
-#     signed_message = w3.eth.account.recover_message(message_hash, signature=signature)
-#     balance = int(contract.functions.balanceOf(signed_message).call())
-#     print(balance)
-#     if balance > 0:
-#         token = uuid.uuid4().hex
-#         response = JSONResponse(content={"redirect": "/check"})  # Use JSONResponse to set a custom response
-#         response.set_cookie("authToken", token, httponly=True, secure=True, samesite="strict")
-#         return response
-#     else:
-#         return "You don't have the required NFT!"
+# Define authentication function
+def authenticate(signature):
+    w3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
+    message = "Access to chat bot"
+    message_hash = encode_defunct(text=message)
+    signed_message = w3.eth.account.recover_message(message_hash, signature=signature)
+    balance = int(contract.functions.balanceOf(signed_message).call())
+    print(balance)
+    if balance > 0:
+        token = uuid.uuid4().hex
+        response = JSONResponse(content={"redirect": "/check"})  # Use JSONResponse to set a custom response
+        response.set_cookie("authToken", token, httponly=True, secure=True, samesite="strict")
+        return response
+    else:
+        return "You don't have the required NFT!"
 
-# # Define function to check for authToken cookie
-# def has_auth_token(request):
-#     authToken = request.cookies.get("authToken")
-#     return authToken is not None
+# Define function to check for authToken cookie
+def has_auth_token(request):
+    authToken = request.cookies.get("authToken")
+    return authToken is not None
 
 def get_user_id(request: Request):
     try:
@@ -128,8 +128,8 @@ user_states = {}
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
-    #return templates.TemplateResponse("auth.html", {"request": request})
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("auth.html", {"request": request})
+    #return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/_health")
@@ -141,17 +141,17 @@ async def health_check():
 #     clerk_api_key = os.getenv("CLERK_API_KEY")
 #     return {"api_key": clerk_api_key}
 
-# @app.get("/auth", response_class=HTMLResponse)
-# async def auth(request: Request, signature: Optional[str] = None):
-#     response = authenticate(signature)
-#     return response
+@app.get("/auth", response_class=HTMLResponse)
+async def auth(request: Request, signature: Optional[str] = None):
+    response = authenticate(signature)
+    return response
 
-# @app.get("/check", response_class=HTMLResponse)
-# async def gpt(request: Request):
-#     if has_auth_token(request):
-#         return templates.TemplateResponse("index.html", {"request": request})
-#     else:
-#         return RedirectResponse(url="/")
+@app.get("/check", response_class=HTMLResponse)
+async def gpt(request: Request):
+    if has_auth_token(request):
+        return templates.TemplateResponse("index.html", {"request": request})
+    else:
+        return RedirectResponse(url="/")
 
 @app.post('/gpt')
 @limiter.limit("1/hour")

@@ -11,4 +11,4 @@ uvicorn
 fastapi
 jinja2
 slowapi
-web3
+web3==6.0.0

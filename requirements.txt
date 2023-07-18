@@ -11,3 +11,4 @@ uvicorn
 fastapi
 jinja2
 slowapi
+web3

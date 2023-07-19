@@ -128,8 +128,8 @@ user_states = {}
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
-    return templates.TemplateResponse("auth.html", {"request": request})
-    #return templates.TemplateResponse("index.html", {"request": request})
+    #return templates.TemplateResponse("auth.html", {"request": request})
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/_health")

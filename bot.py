@@ -14,17 +14,17 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from web3 import Web3
-from eth_account.messages import encode_defunct
+#from web3 import Web3
+#from eth_account.messages import encode_defunct
 from typing import Optional
 
 
 main.load_dotenv()
 
-os.environ['WEB3_PROVIDER'] = f"https://polygon-mumbai.g.alchemy.com/v2/{os.environ['ALCHEMY_API_KEY']}"
+#os.environ['WEB3_PROVIDER'] = f"https://polygon-mumbai.g.alchemy.com/v2/{os.environ['ALCHEMY_API_KEY']}"
 
 # Initialize web3
-web3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
+#web3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
 
 
 class Query(BaseModel):
@@ -47,9 +47,9 @@ primer = """
 You are Samantha, a highly intelligent and helpful virtual assistant designed to support Ledger, a French cryptocurrency company led by CEO Pascal Gauthier. Your primary responsibility is to assist Ledger users by providing accurate answers to their questions. If a question is unclear or lacks detail, ask for more information instead of making assumptions. If you are unsure of an answer, be honest and seek clarification.
 
 Users may ask about various Ledger products, including the Ledger Nano S (no battery, low storage), Nano X (Bluetooth, large storage, has a battery), Nano S Plus (large storage, no Bluetooth, no battery), Ledger Stax (unreleased), Ledger Recover and Ledger Live.
-The official Ledger store is located at https://shop.ledger.com/. The Ledger Recover White Paper is located at https://github.com/LedgerHQ/recover-whitepaper . For authorized resellers, please visit https://www.ledger.com/reseller/. Do not modify or share any other links for these purposes.
+The official Ledger store is located at https://shop.ledger.com/. For authorized resellers, please visit https://www.ledger.com/reseller/. Do not modify or share any other links for these purposes.
 
-When users inquire about tokens, crypto or coins supported in Ledger Live , it is crucial to strictly recommend checking the Crypto Asset List link to verify support: https://support.ledger.com/hc/en-us/articles/10479755500573?docs=true/. Do NOT provide any other links to the list.
+When users inquire about tokens, crypto or coins supported in Ledger Live, it is crucial to strictly recommend checking the Crypto Asset List link to verify support: https://support.ledger.com/hc/en-us/articles/10479755500573?docs=true/. Do NOT provide any other links to the list.
 
 VERY IMPORTANT:
 
@@ -58,7 +58,7 @@ VERY IMPORTANT:
 - When responding to a question, include a maximum of two URL links from the provided CONTEXT, choose the most relevant.
 - Avoid sharing URLs if none are mentioned within the CONTEXT.
 - Always present URLs as plain text, never use markdown formatting.
-- If a user ask to speak to a human agent, invite them to contact us via this link: https://support.ledger.com/hc/en-us/articles/4423020306705-Contact-Us?support=true 
+- If a user asks to speak to a human agent, invite them to contact us via this link: https://support.ledger.com/hc/en-us/articles/4423020306705-Contact-Us?support=true 
 - If a user reports a scam or unauthorized crypto transactions, empathetically acknowledge their situation, promptly connect them with a live agent, and share this link for additional help: https://support.ledger.com/hc/en-us/articles/7624842382621-Loss-of-funds?support=true.
 - Direct users who want to learn more about Ledger products or compare devices to https://www.ledger.com/.
 - Updating or downloading Ledger Live must always be done via this link: https://www.ledger.com/ledger-live
@@ -71,26 +71,26 @@ Begin!
 # #####################################################
 
 
-# Define authentication function
-def authenticate(signature):
-    w3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
-    message = "Access to chat bot"
-    message_hash = encode_defunct(text=message)
-    signed_message = w3.eth.account.recover_message(message_hash, signature=signature)
-    balance = int(contract.functions.balanceOf(signed_message).call())
-    print(balance)
-    if balance > 0:
-        token = uuid.uuid4().hex
-        response = JSONResponse(content={"redirect": "/check"})  # Use JSONResponse to set a custom response
-        response.set_cookie("authToken", token, httponly=True, secure=True, samesite="strict")
-        return response
-    else:
-        return "You don't have the required NFT!"
+# # Define authentication function
+# def authenticate(signature):
+#     w3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
+#     message = "Access to chat bot"
+#     message_hash = encode_defunct(text=message)
+#     signed_message = w3.eth.account.recover_message(message_hash, signature=signature)
+#     balance = int(contract.functions.balanceOf(signed_message).call())
+#     print(balance)
+#     if balance > 0:
+#         token = uuid.uuid4().hex
+#         response = JSONResponse(content={"redirect": "/check"})  # Use JSONResponse to set a custom response
+#         response.set_cookie("authToken", token, httponly=True, secure=True, samesite="strict")
+#         return response
+#     else:
+#         return "You don't have the required NFT!"
 
-# Define function to check for authToken cookie
-def has_auth_token(request):
-    authToken = request.cookies.get("authToken")
-    return authToken is not None
+# # Define function to check for authToken cookie
+# def has_auth_token(request):
+#     authToken = request.cookies.get("authToken")
+#     return authToken is not None
 
 def get_user_id(request: Request):
     try:
@@ -136,22 +136,17 @@ async def root(request: Request):
 async def health_check():
     return {"status": "OK"}
 
-# @app.get("/api/clerk-api-key")
-# def get_api_key():
-#     clerk_api_key = os.getenv("CLERK_API_KEY")
-#     return {"api_key": clerk_api_key}
+# @app.get("/auth", response_class=HTMLResponse)
+# async def auth(request: Request, signature: Optional[str] = None):
+#     response = authenticate(signature)
+#     return response
 
-@app.get("/auth", response_class=HTMLResponse)
-async def auth(request: Request, signature: Optional[str] = None):
-    response = authenticate(signature)
-    return response
-
-@app.get("/check", response_class=HTMLResponse)
-async def gpt(request: Request):
-    if has_auth_token(request):
-        return templates.TemplateResponse("index.html", {"request": request})
-    else:
-        return RedirectResponse(url="/")
+# @app.get("/check", response_class=HTMLResponse)
+# async def gpt(request: Request):
+#     if has_auth_token(request):
+#         return templates.TemplateResponse("index.html", {"request": request})
+#     else:
+#         return RedirectResponse(url="/")
 
 @app.post('/gpt')
 @limiter.limit("1/hour")
@@ -173,7 +168,6 @@ def react_description(query: Query, request: Request):
         res_query = index.query(xq, top_k=5, include_metadata=True)
         print(res_query)
 
-        #contexts = [item['metadata']['text'] for item in res_query['matches'] if item['score'] > 0.78]
         contexts = [(item['metadata']['text'] + "\nSource: " + item['metadata'].get('source', 'N/A')) for item in res_query['matches'] if item['score'] > 0.78]
 
         prev_response_line = f"YOUR PREVIOUS RESPONSE: {last_response}\n\n-----\n\n" if last_response else ""

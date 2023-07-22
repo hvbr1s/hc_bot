@@ -58,7 +58,7 @@ app.add_middleware(SlowAPIMiddleware)
 async def custom_rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
     return JSONResponse(
         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-        content={"detail": "Too many requests, please try again in a minute."},
+        content={"detail": "Too many requests, please try again in an hour."},
     )
 
 # Initialize user state
@@ -77,7 +77,7 @@ async def health_check():
 
 
 @app.post("/sendMessage")
-@limiter.limit("1/minute")
+@limiter.limit("1/hour")
 async def send_message(request: Request):
     data = await request.json()
     user_input = data.get("user_input")

@@ -77,7 +77,7 @@ async def health_check():
 
 
 @app.post("/sendMessage")
-@limiter.limit("1/hour")
+@limiter.limit("2/hour")
 async def send_message(request: Request):
     data = await request.json()
     user_input = data.get("user_input")

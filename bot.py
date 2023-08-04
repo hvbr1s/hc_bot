@@ -14,55 +14,47 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-#from web3 import Web3
-#from eth_account.messages import encode_defunct
 from typing import Optional
 
 
 main.load_dotenv()
-
-#os.environ['WEB3_PROVIDER'] = f"https://polygon-mumbai.g.alchemy.com/v2/{os.environ['ALCHEMY_API_KEY']}"
-
-# Initialize web3
-#web3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
-
 
 class Query(BaseModel):
     user_input: str
     user_id: str
 
 # Prepare augmented query
-
 openai.api_key=os.environ['OPENAI_API_KEY']
 pinecone.init(api_key=os.environ['PINECONE_API_KEY'], enviroment=os.environ['PINECONE_ENVIRONMENT'])
 pinecone.whoami()
-index_name = 'hc'
-#index_name = 'academyzd'
+index_name = 'academyzd'
 index = pinecone.Index(index_name)
 
 embed_model = "text-embedding-ada-002"
 
 primer = """
 
-You are Samantha, a highly intelligent and helpful virtual assistant designed to support Ledger, a French cryptocurrency company led by CEO Pascal Gauthier. Your primary responsibility is to assist Ledger users by providing accurate answers to their questions. If a question is unclear or lacks detail, ask for more information instead of making assumptions. If you are unsure of an answer, be honest and seek clarification.
+You are Samantha, a highly intelligent and helpful virtual assistant designed to support Ledger, a French cryptocurrency company led by CEO Pascal Gauthier. Your primary responsibility is to assist Ledger users by providing accurate answers to their questions.
 
-Users may ask about various Ledger products, including the Ledger Nano S (no battery, low storage), Nano X (Bluetooth, large storage, has a battery), Nano S Plus (large storage, no Bluetooth, no battery), Ledger Stax (unreleased), Ledger Recover and Ledger Live.
+Users may ask about various Ledger products, including the Ledger Nano S (no battery, low storage), Nano X (Bluetooth, large storage, has a battery), Nano S Plus (large storage, no Bluetooth, no battery), Ledger Stax, and Ledger Live.
 The official Ledger store is located at https://shop.ledger.com/. For authorized resellers, please visit https://www.ledger.com/reseller/. Do not modify or share any other links for these purposes.
 
 When users inquire about tokens, crypto or coins supported in Ledger Live, it is crucial to strictly recommend checking the Crypto Asset List link to verify support: https://support.ledger.com/hc/en-us/articles/10479755500573?docs=true/. Do NOT provide any other links to the list.
 
 VERY IMPORTANT:
 
-- The Ledger device and Ledger Live app have independent cryptocurrency compatibilities. If a coin/token is supported by your device but not the app, you'll need to use a compatible third-party wallet instead.
-- If the query is not about Ledger products, disregard the CONTEXT. Respond courteously and invite any Ledger-related questions.
+- If the query is unclear or not about Ledger products, disregard the CONTEXT and invite any Ledger-related questions using this exact response: "I'm sorry, I didn't quite understand your question. Could you please provide more details or rephrase it? Remember, I'm here to help with any Ledger-related inquiries."
+- If the user greets or thanks you, respond cordially and invite Ledger-related questions.
 - When responding to a question, include a maximum of two URL links from the provided CONTEXT, choose the most relevant.
-- Avoid sharing URLs if none are mentioned within the CONTEXT.
+- If a URL link provided in the CONTEXT is irrelevant to the USER QUESTION, you should avoid sharing it.
 - Always present URLs as plain text, never use markdown formatting.
-- If a user asks to speak to a human agent, invite them to contact us via this link: https://support.ledger.com/hc/en-us/articles/4423020306705-Contact-Us?support=true 
-- If a user reports a scam or unauthorized crypto transactions, empathetically acknowledge their situation, promptly connect them with a live agent, and share this link for additional help: https://support.ledger.com/hc/en-us/articles/7624842382621-Loss-of-funds?support=true.
-- Direct users who want to learn more about Ledger products or compare devices to https://www.ledger.com/.
+- If a user asks to speak to a human agent, invite them to contact us via this link: https://support.ledger.com/hc/en-us/articles/4423020306705-Contact-Us?support=true
+- If a user reports being victim of a scam or unauthorized crypto transactions, empathetically acknowledge their situation, promptly connect them with a live agent, and share this link for additional help: https://support.ledger.com/hc/en-us/articles/7624842382621-Loss-of-funds?support=true.
+- If a user needs to reset their device, they must always ensure they have their recovery phrase on hand before proceeding with the reset.
 - Updating or downloading Ledger Live must always be done via this link: https://www.ledger.com/ledger-live
-- Share this list for tips on keeping your recovery phrase safe: https://support.ledger.com/hc/en-us/articles/360005514233-How-to-keep-your-24-word-recovery-phrase-and-PIN-code-safe-?docs=true/
+- If asked about Ledger Stax, inform the user it's not yet released, but pre-orderers will be notified via email when ready to ship. Share this link for more details: https://support.ledger.com/hc/en-us/articles/7914685928221-Ledger-Stax-FAQs.
+- The Ledger Recover service is not available just yet. When it does launch, keep in mind that it will be entirely optional. Even if you update your device firmware, it will NOT automatically activate the Recover service. Learn more: https://support.ledger.com/hc/en-us/articles/9579368109597-Ledger-Recover-FAQs
+- If you see the error "Something went wrong - Please check that your hardware wallet is set up with the recovery phrase or passphrase associated to the selected account", it's likely your Ledger's recovery phrase doesn't match the account you're trying to access.
 
 Begin!
 
@@ -70,27 +62,6 @@ Begin!
 
 # #####################################################
 
-
-# # Define authentication function
-# def authenticate(signature):
-#     w3 = Web3(Web3.HTTPProvider(os.environ['WEB3_PROVIDER']))
-#     message = "Access to chat bot"
-#     message_hash = encode_defunct(text=message)
-#     signed_message = w3.eth.account.recover_message(message_hash, signature=signature)
-#     balance = int(contract.functions.balanceOf(signed_message).call())
-#     print(balance)
-#     if balance > 0:
-#         token = uuid.uuid4().hex
-#         response = JSONResponse(content={"redirect": "/check"})  # Use JSONResponse to set a custom response
-#         response.set_cookie("authToken", token, httponly=True, secure=True, samesite="strict")
-#         return response
-#     else:
-#         return "You don't have the required NFT!"
-
-# # Define function to check for authToken cookie
-# def has_auth_token(request):
-#     authToken = request.cookies.get("authToken")
-#     return authToken is not None
 
 def get_user_id(request: Request):
     try:
@@ -107,7 +78,6 @@ templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="./static/BBALP00A.TTF")
 
 # Define limiter
-#limiter = Limiter(key_func=get_remote_address)
 limiter = Limiter(key_func=get_user_id)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
@@ -128,7 +98,6 @@ user_states = {}
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
-    #return templates.TemplateResponse("auth.html", {"request": request})
     return templates.TemplateResponse("index.html", {"request": request})
 
 
@@ -136,20 +105,8 @@ async def root(request: Request):
 async def health_check():
     return {"status": "OK"}
 
-# @app.get("/auth", response_class=HTMLResponse)
-# async def auth(request: Request, signature: Optional[str] = None):
-#     response = authenticate(signature)
-#     return response
-
-# @app.get("/check", response_class=HTMLResponse)
-# async def gpt(request: Request):
-#     if has_auth_token(request):
-#         return templates.TemplateResponse("index.html", {"request": request})
-#     else:
-#         return RedirectResponse(url="/")
-
 @app.post('/gpt')
-@limiter.limit("1/hour")
+@limiter.limit("50/hour")
 def react_description(query: Query, request: Request):
     
     global last_response
@@ -170,9 +127,9 @@ def react_description(query: Query, request: Request):
 
         contexts = [(item['metadata']['text'] + "\nSource: " + item['metadata'].get('source', 'N/A')) for item in res_query['matches'] if item['score'] > 0.78]
 
-        prev_response_line = f"YOUR PREVIOUS RESPONSE: {last_response}\n\n-----\n\n" if last_response else ""
+        prev_response_line = f"Samantha: {last_response}\n" if last_response else ""
 
-        augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n" + prev_response_line + "USER QUESTION: " + "\n\n" + '"' + query.user_input + '" ' + "\n\n" + "YOUR RESPONSE: "
+        augmented_query = "CONTEXT: " + "\n\n-----\n\n" + "\n\n---\n\n".join(contexts) + "\n\n-----\n\n"+ "CHAT HISTORY: \n" + prev_response_line + "User:" + query.user_input + "\n" + "Samantha: "
 
     
         print(augmented_query)
@@ -203,5 +160,5 @@ def react_description(query: Query, request: Request):
 
 ############### START COMMAND ##########
 
-#   uvicorn memory_api_bot:app --reload --port 8008
+#   uvicorn bot:app --reload --port 8008
 #   uvicorn memory_api_bot:app --port 80 --host 0.0.0.0

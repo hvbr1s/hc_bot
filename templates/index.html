@@ -408,7 +408,7 @@
             $('#submit-btn').prop('disabled', true);
             $.ajax({
                 type: 'POST',
-                url: ' https://hc-bot.onrender.com/sendMessage',
+                url: ' https://hc-bot.onrender.com/gpt',
                 data: JSON.stringify({user_input: input_text, user_id: user_id}),
                 contentType: 'application/json',
 

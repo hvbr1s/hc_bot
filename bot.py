@@ -10,6 +10,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 import httpx
+from typing import Optional
 
 
 main.load_dotenv()
@@ -17,8 +18,8 @@ main.load_dotenv()
 class Query(BaseModel):
     user_input: str
     user_id: str
-    locale: None | None
-    platform: None | None
+    locale: Optional[str]
+    platform: Optional[str]
 
 
 # #####################################################

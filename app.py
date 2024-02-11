@@ -19,14 +19,14 @@ main.load_dotenv()
 class Query(BaseModel):
     user_input: str
     user_id: str
-    locale: Optional[str]
-    platform: Optional[str]
+    locale: str
+    platform: str
 
 
 # #####################################################
 
 
-def get_user_id(request: Request):
+async def get_user_id(request: Request):
     try:
         body = parse_obj_as(Query, request.json())
         user_id = body.user_id
@@ -54,9 +54,6 @@ async def custom_rate_limit_exceeded_handler(request: Request, exc: RateLimitExc
     )
 
 
-# Initialize user state
-user_states = {}
-
 # Define FastAPI endpoints
 
 @app.get("/", response_class=HTMLResponse)
@@ -70,32 +67,43 @@ async def health_check():
 
 @app.post('/gpt')
 @limiter.limit("10/hour")
-async def send_message(request: Request, query: Query):
-
-    user_id = query.user_id
+async def react_description(query: Query, request: Request):
+    
+    global last_response
     user_input = query.user_input
-    locale = query.locale if locale else 'eng'
-    platform = query.platform if platform else 'slack'
-
-    if not user_input or not user_id:
-        raise HTTPException(status_code=400, detail="Invalid input")
+    user_id = query.user_id
+    locale = query.locale
+    platform = query.platform
 
     try:
         async with httpx.AsyncClient() as client:
+            print('check!')
             response = await client.post(
-                "https://www.samanthabot.co/gpt",
-                json={"user_input": user_input, "user_id": user_id, "locale": locale, },
-                headers = {'Content-Type': 'application/json', "Authorization": f"Bearer {os.getenv('BACKEND_API_KEY')}"},
+
+                "https://www.samanthabot.co/",
+                json={
+                    "user_input": user_input, 
+                    "user_id": user_id,
+                    "locale": locale,
+                    "platform": platform
+                },
+                headers = {
+                    'Content-Type': "application/json", 
+                    "Authorization": f"Bearer {os.getenv('BACKEND_API_KEY')}"
+                },
                 timeout=30.0
             )
-            response.raise_for_status()  # Will raise an exception for 4xx and 5xx status codes
+            resp = response.raise_for_status()  # Will raise an exception for 4xx and 5xx status codes
+            print(resp)
     except httpx.HTTPStatusError as e:
+        print(f"Exception occurred: {e}")   
         raise HTTPException(status_code=500, detail="Server error")
     
     response_data = response.json()
     print(f"Server response: {response_data}")  # Debugging print statement
+    
 
-    chat_output = response_data.get("output", "No output provided.")
+    chat_output = response_data[0]
 
     chatty = {"output": chat_output}
     print(chatty)

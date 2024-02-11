@@ -10,8 +10,8 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 import httpx
-from typing import Optional
 from fastapi import Request
+
 
 
 main.load_dotenv()
@@ -77,10 +77,9 @@ async def react_description(query: Query, request: Request):
 
     try:
         async with httpx.AsyncClient() as client:
-            print('check!')
             response = await client.post(
 
-                "https://www.samanthabot.co/",
+                "https://www.samanthabot.co/chat",
                 json={
                     "user_input": user_input, 
                     "user_id": user_id,
@@ -103,7 +102,7 @@ async def react_description(query: Query, request: Request):
     print(f"Server response: {response_data}")  # Debugging print statement
     
 
-    chat_output = response_data[0]
+    chat_output = response_data['output']
 
     chatty = {"output": chat_output}
     print(chatty)
@@ -115,3 +114,4 @@ async def react_description(query: Query, request: Request):
 
 #   uvicorn bot:app --reload --port 8008
 #   uvicorn memory_api_bot:app --port 80 --host 0.0.0.0
+#   nginx file location at: /etc/nginx/sites-available/

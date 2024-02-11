@@ -85,7 +85,9 @@ try:
     }
     payload = {
         'user_input': user_input,
-        'user_id': user_id
+        'user_id': user_id,
+        'locale': locale,
+        'platform': platform
     }
     response = requests.post('https://samanthabot.co/', json=payload, headers=headers)
     print('Received response:', response.json())

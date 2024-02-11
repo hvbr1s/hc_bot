@@ -1,6 +1,4 @@
 import os
-import requests
-import json
 from dotenv import main
 from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -11,7 +9,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from typing import Optional
+import httpx
 
 
 main.load_dotenv()
@@ -70,41 +68,37 @@ async def health_check():
 
 @app.post('/gpt')
 @limiter.limit("10/hour")
-async def chat(query: Query):
-    
-user_id = query.user_id
-user_input = query.user_input
-locale = query.locale if locale else 'eng'
-platform = query.platform if platform else 'slack'
+async def send_message(query: Query):
 
-try:
-    print('Making request to https://samanthabot.co/')
-    headers = {
-        'Authorization': f'Bearer {os.getenv("BACKEND_API_KEY")}',
-        'Content-Type': 'application/json'
-    }
-    payload = {
-        'user_input': user_input,
-        'user_id': user_id,
-        'locale': locale,
-        'platform': platform
-    }
-    response = requests.post('https://samanthabot.co/', json=payload, headers=headers)
-    print('Received response:', response.json())
-    # Forward the response from the target address
-    # Assuming 'res' is an object of a response class in a web framework like Flask or Django
-    res.status_code = 200
-    res.data = response.json()  # Modify this line based on your web framework
-    
-except:
-    requests.exceptions.RequestException as error:
-    print('Error during forwarding request:', error)
-    # Modify the error handling based on your web framework
-    error_status_code = error.response.status_code if error.response else 500
-    res.status_code = error_status_code
-    res.data = {'error': str(error)}
+    user_id = query.user_id
+    user_input = query.user_input
+    locale = query.locale if locale else 'eng'
+    platform = query.platform if platform else 'slack'
 
-return response
+    if not user_input or not user_id:
+        raise HTTPException(status_code=400, detail="Invalid input")
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://www.samanthabot.co/gpt",
+                json={"user_input": user_input, "user_id": user_id, "locale": locale, },
+                headers = {'Content-Type': 'application/json', "Authorization": f"Bearer {os.getenv('BACKEND_API_KEY')}"},
+                timeout=30.0
+            )
+            response.raise_for_status()  # Will raise an exception for 4xx and 5xx status codes
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=500, detail="Server error")
+    
+    response_data = response.json()
+    print(f"Server response: {response_data}")  # Debugging print statement
+
+    chat_output = response_data.get("output", "No output provided.")
+
+    chatty = {"output": chat_output}
+    print(chatty)
+
+    return chatty
 
 
 ############### START COMMAND ##########

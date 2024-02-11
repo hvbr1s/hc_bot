@@ -11,6 +11,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 import httpx
 from typing import Optional
+from fastapi import Request
 
 
 main.load_dotenv()
@@ -69,7 +70,7 @@ async def health_check():
 
 @app.post('/gpt')
 @limiter.limit("10/hour")
-async def send_message(query: Query):
+async def send_message(request: Request, query: Query):
 
     user_id = query.user_id
     user_input = query.user_input

@@ -399,19 +399,17 @@
 
         // Generate a UUID for the user
         var user_id = uuid.v4();
-        console.log(user_id)
         // Store the user_id in local storage or a cookie for future use
         localStorage.setItem('user_id', user_id);
         $('form').submit(function(event) {
             event.preventDefault();
             var input_text = $('#input').val();
-            console.log(input_text)
             $('.loading').show();
             $('#submit-btn').prop('disabled', true);
             $.ajax({
                 type: 'POST',
-                //url: ' https://hc-bot.onrender.com/gpt',
-                url: 'http://127.0.0.1:8000/gpt',
+                url: ' https://hc-bot.onrender.com/gpt',
+                //url: 'http://127.0.0.1:8000/gpt',
                 data: JSON.stringify({
                     user_input: input_text,
                     user_id: user_id,

@@ -2,9 +2,10 @@
 
 A chatbot designed to interact with the Ledger Help Center and Ledger Academy through natural language queries.
 
-Try it the demo at: [https://hc-bot.onrender.com](https://hc-bot.onrender.com)
+Try the demo at: [https://hc-bot.onrender.com](https://hc-bot.onrender.com)
 
-The bot is running on a free Render tier so expect long loadtime!
+The bot runs on a free Render tier so expect a long load time!
 
-[![Demo video](https://img.youtube.com/vi/bsrQfPHkWoo/0.jpg)](https://www.youtube.com/watch?v=bsrQfPHkWoo)
+[![Video Preview](https://img.youtube.com/vi/7H0ideySlVk/0.jpg)](https://youtu.be/7H0ideySlVk)
+
 
